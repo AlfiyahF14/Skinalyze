@@ -198,44 +198,30 @@ def load_models():
 # -------------------------
 # Flask init
 # -------------------------
-def get_image_path(kategori="", nama_produk="", image_col=""):
-    default_image = url_for("static", filename="images/default.png")
+def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "") -> str:
+    """Helper untuk mencari gambar yang fleksibel di Linux."""
+    # Gunakan folder 'images' (huruf kecil semua lebih aman di Linux)
+    base_images = STATIC_DIR / "images" 
+    
+    # 1. Cek dari kolom image di dataset
+    if image_col and str(image_col) != "nan":
+        img_path = Path(str(image_col)).as_posix()
+        if (base_images / img_path).exists():
+            return url_for('static', filename=f'images/{img_path}')
 
-    # Kalau kategori kosong atau kolom gambar kosong → pakai default
-    if not kategori or not image_col or str(image_col).lower() == "nan":
-        return default_image
+    # 2. Cek berdasarkan kategori/nama_produk
+    if kategori and nama_produk:
+        kat_clean = kategori.lower().replace(" ", "")
+        prod_clean = nama_produk.strip().replace(" ", "_")
+        
+        exts = ['.png', '.jpg', '.jpeg', '.PNG', '.JPG']
+        for ext in exts:
+            fname = f"{kat_clean}/{prod_clean}{ext}"
+            if (base_images / fname).exists():
+                return url_for('static', filename=f'images/{fname}')
 
-    CATEGORY_FOLDER_MAP = {
-        "facialwash": "facialwash",
-        "facial wash": "facialwash",
-        "facial_wash": "facialwash",
-        "toner": "toner",
-        "serum": "serum",
-        "moisturizer": "moisturizer",
-        "sunscreen": "sunscreen",
-    }
-
-    kat = str(kategori).strip().lower()
-    folder = CATEGORY_FOLDER_MAP.get(kat, kat.replace(" ", ""))
-
-    # Ambil hanya nama file (tanpa path)
-    filename = str(image_col).split("/")[-1]
-
-    # Normalisasi biar cocok dengan file di folder
-    clean_filename = normalize_filename(filename)
-
-    # Cek apakah file benar-benar ada
-    file_path = os.path.join(app.root_path, "static", "images", folder, clean_filename)
-
-    if os.path.exists(file_path):
-        return url_for("static", filename=f"images/{folder}/{clean_filename}")
-
-    # Kalau tidak ada → fallback ke default
-    return default_image
-
-# 🔥 INI WAJIB
-app.jinja_env.globals.update(get_image_path=get_image_path)
-
+    return url_for('static', filename='images/default.png')
+    
 def apply_filters(df, q="", brand="", prefs=None):
     if q:
         q_lower = q.lower()
@@ -1250,6 +1236,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
