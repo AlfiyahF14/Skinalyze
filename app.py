@@ -63,6 +63,9 @@ app.wsgi_app = ProxyFix(
 # -------------------------
 # Util Dataset
 # -------------------------
+def normalize_key(text: str) -> str:
+    return normalize_filename(text).lower()
+
 def normalize_filename(name: str) -> str:
     name = name.strip()
     name = name.replace(" ", "_")
@@ -1244,6 +1247,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
