@@ -131,11 +131,7 @@
              data-non_comedogenic="{{ 'yes' if item.non_comedogenic else 'no' }}">
 
           <center>
-            <img
-                src="{{ url_for('static', filename=item.image_url) }}"
-                alt="{{ item.nama_produk }}"
-                onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/default.png') }}';"
-              />
+            <img src="{{ item.image_url }}" alt="{{ item.nama }}" class="w-40 h-48 object-cover rounded-lg mb-3">
           </center>
           
           <h3 class="font-bold text-lg">{{ item.nama }}</h3>
@@ -283,5 +279,6 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
 </script>
 
 {% endblock %}
+
 
 
