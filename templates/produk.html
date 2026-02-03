@@ -58,8 +58,8 @@
         <div class="mb-6">
           <h4 class="font-semibold mb-2">Kategori</h4>
           <div class="flex flex-col space-y-2 text-sm">
-           <label><input type="checkbox" value="facialwash" class="filter-category mr-2"
-              {% if 'facialwash' in request.args.getlist('kategori') %}checked{% endif %}> Facial Wash
+           <label><input type="checkbox" value="facial_wash" class="filter-category mr-2"
+              {% if 'facial_wash' in request.args.getlist('kategori') %}checked{% endif %}> Facial Wash
             </label>
 
             <label><input type="checkbox" value="toner" class="filter-category mr-2"
@@ -127,7 +127,7 @@
           <h3 class="font-bold text-lg">{{ item.nama }}</h3>
           <p class="text-sm text-gray-600">
             {{ item.brand }} | 
-            {{ item.kategori.replace('facialwash','Facial Wash')
+            {{ item.kategori.replace('facialwash','Facial Wash', 'Facial_Wash', 'facial_wash')
                             .replace('moisturizer','Moisturizer')
                             .replace('serum','Serum')
                             .replace('toner','Toner')
@@ -293,3 +293,4 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
 });
 </script>
 {% endblock %}
+
