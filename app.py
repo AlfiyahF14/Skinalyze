@@ -191,27 +191,33 @@ def load_models():
 # Flask init
 # -------------------------
 def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "") -> str:
-    """Helper untuk mencari gambar yang fleksibel di Linux."""
-    # Gunakan folder 'images' (huruf kecil semua lebih aman di Linux)
-    base_images = STATIC_DIR / "images" 
+    # 1. Pastikan kategori bersih (contoh: "Facial Wash" -> "facialwash")
+    kat_clean = str(kategori).lower().replace(" ", "").replace("_", "")
     
-    # 1. Cek dari kolom image di dataset
+    # 2. Jika ada nama file di kolom Excel
     if image_col and str(image_col) != "nan":
-        img_path = Path(str(image_col)).as_posix()
-        if (base_images / img_path).exists():
-            return url_for('static', filename=f'images/{img_path}')
-
-    # 2. Cek berdasarkan kategori/nama_produk
-    if kategori and nama_produk:
-        kat_clean = kategori.lower().replace(" ", "")
-        prod_clean = nama_produk.strip().replace(" ", "_")
+        filename = str(image_col).strip()
         
-        exts = ['.png', '.jpg', '.jpeg', '.PNG', '.JPG']
+        # Jika di Excel cuma "Emina.png", kita paksa cari di "images/[kategori]/Emina.png"
+        if "/" not in filename:
+            final_path = f"images/{kat_clean}/{filename}"
+        else:
+            # Jika di Excel masih ada "facial_wash/Emina.png"
+            final_path = f"images/{filename}"
+            
+        return url_for('static', filename=final_path)
+
+    # 3. Cadangan: Jika kolom gambar kosong, cari berdasarkan nama produk
+    if kategori and nama_produk:
+        prod_clean = nama_produk.strip().replace(" ", "_")
+        exts = ['.png', '.jpg', '.jpeg']
         for ext in exts:
             fname = f"{kat_clean}/{prod_clean}{ext}"
-            if (base_images / fname).exists():
+            # Cek fisik file di server
+            if (STATIC_DIR / "images" / fname).exists():
                 return url_for('static', filename=f'images/{fname}')
 
+    # 4. Jika semua gagal
     return url_for('static', filename='images/default.png')
 
 def apply_filters(df, q="", brand="", prefs=None):
@@ -1213,3 +1219,4 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
