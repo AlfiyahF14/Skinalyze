@@ -231,7 +231,7 @@ document.getElementById("btnFilter").addEventListener("click", function() {
     });
 
     document.querySelectorAll(".filter-category:checked").forEach(cb => {
-        url += "category=" + encodeURIComponent(cb.value) + "&";
+        url += "kategori=" + encodeURIComponent(cb.value) + "&";
     });
 
     if (document.getElementById("filterAlcoholFree").checked) url += "alcohol_free=true&";
@@ -279,6 +279,7 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
 </script>
 
 {% endblock %}
+
 
 
 
