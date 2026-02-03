@@ -202,21 +202,21 @@ def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "
     CATEGORY_FOLDER_MAP = {
         "facialwash": "facial_wash",
         "facial wash": "facial_wash",
+        "facial_wash": "facial_wash",
         "toner": "toner",
         "serum": "serum",
         "moisturizer": "moisturizer",
         "sunscreen": "sunscreen",
     }
 
-    kat_raw = str(kategori).strip().lower()
-    kat_clean = CATEGORY_FOLDER_MAP.get(kat_raw, kat_raw.replace(" ", "_"))
-
-    filename = os.path.basename(str(image_col).strip())
-
-    return url_for(
-        "static",
-        filename=f"images/{kat_clean}/{filename}"
+    kat_clean = CATEGORY_FOLDER_MAP.get(
+        str(kategori).strip().lower(),
+        str(kategori).strip().lower().replace(" ", "_")
     )
+
+    filename = str(image_col).strip().split("/")[-1]
+
+    return url_for("static", filename=f"images/{kat_clean}/{filename}")
 
 def apply_filters(df, q="", brand="", prefs=None):
     if q:
@@ -618,38 +618,35 @@ def page_home():
 @app.route("/produk")
 @app.route("/produk/page/<int:page>")
 def page_produk(page=1):
+
+    # =========================
+    # GABUNG DATASET
+    # =========================
     all_df = pd.concat(list(DATASET.values())) if DATASET else pd.DataFrame()
 
-    brands = (
-        sorted(all_df["Brand"].dropna().unique().tolist())
-        if "Brand" in all_df.columns else []
-    )
-    categories = (
-        sorted(all_df["Kategori"].dropna().unique().tolist())
-        if "Kategori" in all_df.columns else []
-    )
+    brands = sorted(all_df["Brand"].dropna().unique().tolist()) if "Brand" in all_df.columns else []
+    categories = sorted(all_df["Kategori"].dropna().unique().tolist()) if "Kategori" in all_df.columns else []
 
-    # =============================
-    # Ambil filter dari query string
-    # =============================
+    # =========================
+    # AMBIL FILTER
+    # =========================
     search = request.args.get("search")
-    selected_brands = request.args.getlist("brand")
+    selected_brands = [b.upper() for b in request.args.getlist("brand")]
     selected_categories = request.args.getlist("kategori")
 
-    alcohol_free = request.args.get("alcohol_free") == "true"
-    fragrance_free = request.args.get("fragrance_free") == "true"
-    non_comedogenic = request.args.get("non_comedogenic") == "true"
+    alcohol_free = get_bool_param("alcohol_free")
+    fragrance_free = get_bool_param("fragrance_free")
+    non_comedogenic = get_bool_param("non_comedogenic")
 
-    # =============================
-    # Normalisasi Brand
-    # =============================
+    # =========================
+    # NORMALISASI BRAND
+    # =========================
     if "Brand" in all_df.columns:
         all_df["Brand"] = all_df["Brand"].astype(str).str.strip().str.upper()
-        selected_brands = [b.upper() for b in selected_brands]
 
-    # =============================
-    # Apply filter
-    # =============================
+    # =========================
+    # FILTER DATA
+    # =========================
     df_filtered = filter_produk(
         all_df,
         search=search,
@@ -660,28 +657,25 @@ def page_produk(page=1):
         non_comedogenic=non_comedogenic
     )
 
-    df_filtered = (
-        df_filtered
-        .drop_duplicates(subset=["Nama Produk"])
-        .reset_index(drop=True)
-    )
+    df_filtered = df_filtered.drop_duplicates(subset=["Nama Produk"]).reset_index(drop=True)
 
-    # =============================
-    # Pagination
-    # =============================
+    # =========================
+    # PAGINATION
+    # =========================
+    items = []
     per_page = 12
     total = len(df_filtered)
-    total_pages = max(1, (total + per_page - 1) // per_page)
+    total_pages = max((total + per_page - 1) // per_page, 1)
 
     page = max(1, min(page, total_pages))
     start = (page - 1) * per_page
     end = start + per_page
+
     df_page = df_filtered.iloc[start:end]
 
-    # =============================
-    # Build items
-    # =============================
-    items = []
+    # =========================
+    # FORMAT DATA KE TEMPLATE
+    # =========================
     for _, r in df_page.iterrows():
         items.append({
             "nama": r.get("Nama Produk", ""),
@@ -697,9 +691,9 @@ def page_produk(page=1):
                 r.get("Kandungan Utama", ""),
                 r.get("Kategori", "")
             ),
-            "alcohol_free": str(r.get("Alcohol-Free", "")).strip().lower() == "yes",
-            "fragrance_free": str(r.get("Fragrance-Free", "")).strip().lower() == "yes",
-            "non_comedogenic": str(r.get("Non-Comedogenic", "")).strip().lower() == "yes",
+            "alcohol_free": bool(r.get("Alcohol-Free")),
+            "fragrance_free": bool(r.get("Fragrance-Free")),
+            "non_comedogenic": bool(r.get("Non-Comedogenic")),
         })
 
     return render_template(
@@ -717,7 +711,6 @@ def page_produk(page=1):
         total_pages=total_pages,
         request=request
     )
-
 
 def filter_produk(
     df,
@@ -1254,6 +1247,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
