@@ -192,45 +192,45 @@ def load_models():
 # -------------------------
 import re
 
+import re
+
 def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "") -> str:
-    # 1. Fungsi kecil untuk membersihkan simbol aneh
+    # 1. Fungsi Normalisasi (Tetap ada untuk membersihkan & dan +)
     def normalisasi_nama(teks):
-        if not teks or str(teks) == "nan":
-            return ""
-        # Ubah simbol & dan + menjadi underscore, lalu hapus spasi ganda
+        if not teks or str(teks) == "nan": return ""
+        # Ubah simbol & dan + menjadi underscore
         teks = str(teks).replace("&", "_").replace("+", "_")
         # Ubah spasi jadi underscore
         teks = teks.replace(" ", "_")
-        # Hapus underscore yang dobel (misal __ jadi _)
+        # Hapus underscore dobel jadi tunggal
         return re.sub(r'_+', '_', teks).strip("_")
 
-    # 2. Pastikan kategori bersih untuk folder
-    kat_clean = str(kategori).lower().replace(" ", "").replace("_", "")
+    # 2. Normalisasi Kategori (SANGAT PENTING!)
+    # Kita ubah spasi jadi underscore (agar "facial wash" jadi "facial_wash")
+    # Tapi kita JANGAN hapus underscore bawaan agar cocok dengan folder GitHub kamu.
+    kat_clean = str(kategori).lower().strip().replace(" ", "_")
     
-    # 3. Ambil nama file dari Excel dan normalisasi
+    # 3. Proses Nama File dari Excel
     if image_col and str(image_col) != "nan":
         filename = str(image_col).strip()
         
-        # Pisahkan nama file dan ekstensi (misal: "Emina+Serum.png")
-        name_part = filename.rsplit('.', 1)[0]
-        ext_part = filename.rsplit('.', 1)[1] if '.' in filename else 'png'
+        # Ambil nama file saja (hilangkan path folder jika ada di Excel)
+        file_only = filename.split("/")[-1]
         
-        # BERSIHKAN SIMBOL DI SINI
+        if '.' in file_only:
+            name_part, ext_part = file_only.rsplit('.', 1)
+        else:
+            name_part, ext_part = file_only, 'png'
+        
+        # Bersihkan nama file dari simbol & dan +
         name_clean = normalisasi_nama(name_part)
         filename_final = f"{name_clean}.{ext_part.lower()}"
         
-        # Rangkai jalurnya
-        if "/" not in filename:
-            final_path = f"images/{kat_clean}/{filename_final}"
-        else:
-            # Jika ada folder di awal, kita ambil nama filenya saja setelah "/"
-            pure_file = filename.split("/")[-1]
-            name_pure = pure_file.rsplit('.', 1)[0]
-            filename_final = f"{normalisasi_nama(name_pure)}.{ext_part.lower()}"
-            final_path = f"images/{kat_clean}/{filename_final}"
-            
+        # Jalur akhir: images/facial_wash/nama_file_bersih.png
+        final_path = f"images/{kat_clean}/{filename_final}"
         return url_for('static', filename=final_path)
 
+    # 4. Cadangan jika tidak ada gambar sama sekali
     return url_for('static', filename='images/default.png')
 
 def apply_filters(df, q="", brand="", prefs=None):
@@ -1232,5 +1232,6 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
