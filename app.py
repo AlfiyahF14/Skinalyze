@@ -32,9 +32,6 @@ def get_bool_param(name):
     val = request.args.get(name, "").strip().lower()
     return val in ["true", "yes", "1", "on"]
 
-def is_yes(val):
-    return str(val).strip().lower() == "yes"
-
 BASE_DIR = Path(__file__).resolve().parent
 DATASET_DIR = BASE_DIR / "dataset"
 MODELS_DIR = BASE_DIR / "models"
@@ -618,35 +615,28 @@ def page_home():
 @app.route("/produk")
 @app.route("/produk/page/<int:page>")
 def page_produk(page=1):
-
-    # =========================
-    # GABUNG DATASET
-    # =========================
     all_df = pd.concat(list(DATASET.values())) if DATASET else pd.DataFrame()
-
+    print("DEBUG KATEGORI UNIQUE:", all_df["Kategori"].unique())
     brands = sorted(all_df["Brand"].dropna().unique().tolist()) if "Brand" in all_df.columns else []
     categories = sorted(all_df["Kategori"].dropna().unique().tolist()) if "Kategori" in all_df.columns else []
 
-    # =========================
-    # AMBIL FILTER
-    # =========================
+    # Ambil filter dari request (query string)
     search = request.args.get("search")
-    selected_brands = [b.upper() for b in request.args.getlist("brand")]
+    selected_brands = request.args.getlist("brand")
     selected_categories = request.args.getlist("kategori")
-
     alcohol_free = get_bool_param("alcohol_free")
     fragrance_free = get_bool_param("fragrance_free")
     non_comedogenic = get_bool_param("non_comedogenic")
 
-    # =========================
-    # NORMALISASI BRAND
-    # =========================
-    if "Brand" in all_df.columns:
-        all_df["Brand"] = all_df["Brand"].astype(str).str.strip().str.upper()
+    prefs = {
+    "Alcohol-Free": alcohol_free,
+    "Fragrance-Free": fragrance_free,
+    "Non-Comedogenic": non_comedogenic,
+}
 
-    # =========================
-    # FILTER DATA
-    # =========================
+    all_df["Brand"] = all_df["Brand"].astype(str).str.strip().str.upper()
+    selected_brands = [b.upper() for b in selected_brands]
+
     df_filtered = filter_produk(
         all_df,
         search=search,
@@ -657,27 +647,26 @@ def page_produk(page=1):
         non_comedogenic=non_comedogenic
     )
 
+    # Pastikan tidak ada duplikat
     df_filtered = df_filtered.drop_duplicates(subset=["Nama Produk"]).reset_index(drop=True)
 
-    # =========================
-    # PAGINATION
-    # =========================
     items = []
     per_page = 12
     total = len(df_filtered)
-    total_pages = max((total + per_page - 1) // per_page, 1)
+    total_pages = (total + per_page - 1) // per_page
 
-    page = max(1, min(page, total_pages))
-    start = (page - 1) * per_page
-    end = start + per_page
+    if total > 0:
+        if page < 1:
+            page = 1
+        if page > total_pages:
+            page = total_pages
 
-    df_page = df_filtered.iloc[start:end]
+        start = (page - 1) * per_page
+        end = start + per_page
+        df_page = df_filtered.iloc[start:end]
 
-    # =========================
-    # FORMAT DATA KE TEMPLATE
-    # =========================
-    for _, r in df_page.iterrows():
-        items.append({
+        for _, r in df_page.iterrows():
+            items.append({
             "nama": r.get("Nama Produk", ""),
             "brand": r.get("Brand", ""),
             "kategori": r.get("Kategori", ""),
@@ -695,6 +684,8 @@ def page_produk(page=1):
             "fragrance_free": bool(r.get("Fragrance-Free")),
             "non_comedogenic": bool(r.get("Non-Comedogenic")),
         })
+    else:
+        total_pages = 1
 
     return render_template(
         "produk.html",
@@ -710,41 +701,32 @@ def page_produk(page=1):
         page=page,
         total_pages=total_pages,
         request=request
-    )
+)
 
-def filter_produk(
-    df,
-    search=None,
-    brands=None,
-    categories=None,
-    alcohol_free=False,
-    fragrance_free=False,
-    non_comedogenic=False
-):
+def filter_produk(df, search=None, brands=None, categories=None, non_comedogenic=False, fragrance_free=False, alcohol_free=False):
+    
     df = df.copy()
 
     if search:
-        s = search.lower()
         df = df[
-            df["Nama Produk"].astype(str).str.lower().str.contains(s, na=False) |
-            df["Kandungan Utama"].astype(str).str.lower().str.contains(s, na=False)
+            df["Brand"].str.contains(search, case=False, na=False) |
+            df["Nama Produk"].str.contains(search, case=False, na=False) |
+            df.get("Kandungan Utama", "").astype(str).str.contains(search, case=False, na=False)
         ]
 
     if brands:
         df = df[df["Brand"].isin(brands)]
 
     if categories:
-        df["Kategori"] = df["Kategori"].astype(str).str.lower().str.replace(" ", "")
-        categories = [c.lower().replace(" ", "") for c in categories]
-        df = df[df["Kategori"].isin(categories)]
+        df = df[df["Kategori"].astype(str).str.lower().isin([c.lower() for c in categories])]
 
-    if alcohol_free:
+    if alcohol_free and "Alcohol-Free" in df.columns:
         df = df[df["Alcohol-Free"] == True]
-
-    if fragrance_free:
+    
+    if fragrance_free and "Fragrance-Free" in df.columns:
         df = df[df["Fragrance-Free"] == True]
 
-    if non_comedogenic:
+    if non_comedogenic and "Non-Comedogenic" in df.columns:
         df = df[df["Non-Comedogenic"] == True]
 
     return df
@@ -760,7 +742,6 @@ def page_tentang():
 @app.route("/rekomendasi")
 def page_rekomendasi():
     return render_template("rekomendasi.html")
-
 
 # -------------------------
 # API: Produk
@@ -1247,6 +1228,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
