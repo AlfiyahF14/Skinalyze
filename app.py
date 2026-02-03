@@ -193,14 +193,12 @@ def load_models():
 # -------------------------
 # Flask init
 # -------------------------
-import re
 def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "") -> str:
     default_image = url_for("static", filename="images/default.png")
 
     if not kategori or not image_col or str(image_col).lower() == "nan":
         return default_image
 
-    # 🔥 FIX PENTING DI SINI
     CATEGORY_FOLDER_MAP = {
         "facialwash": "facial_wash",
         "facial wash": "facial_wash",
@@ -213,9 +211,12 @@ def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "
     kat_raw = str(kategori).strip().lower()
     kat_clean = CATEGORY_FOLDER_MAP.get(kat_raw, kat_raw.replace(" ", "_"))
 
-    filename = str(image_col).strip().split("/")[-1]
+    filename = os.path.basename(str(image_col).strip())
 
-    return url_for("static", filename=f"images/{kat_clean}/{filename}")
+    return url_for(
+        "static",
+        filename=f"images/{kat_clean}/{filename}"
+    )
 
 def apply_filters(df, q="", brand="", prefs=None):
     if q:
@@ -619,8 +620,14 @@ def page_home():
 def page_produk(page=1):
     all_df = pd.concat(list(DATASET.values())) if DATASET else pd.DataFrame()
 
-    brands = sorted(all_df["Brand"].dropna().unique().tolist()) if "Brand" in all_df.columns else []
-    categories = sorted(all_df["Kategori"].dropna().unique().tolist()) if "Kategori" in all_df.columns else []
+    brands = (
+        sorted(all_df["Brand"].dropna().unique().tolist())
+        if "Brand" in all_df.columns else []
+    )
+    categories = (
+        sorted(all_df["Kategori"].dropna().unique().tolist())
+        if "Kategori" in all_df.columns else []
+    )
 
     # =============================
     # Ambil filter dari query string
@@ -633,7 +640,9 @@ def page_produk(page=1):
     fragrance_free = request.args.get("fragrance_free") == "true"
     non_comedogenic = request.args.get("non_comedogenic") == "true"
 
-    # Normalisasi brand
+    # =============================
+    # Normalisasi Brand
+    # =============================
     if "Brand" in all_df.columns:
         all_df["Brand"] = all_df["Brand"].astype(str).str.strip().str.upper()
         selected_brands = [b.upper() for b in selected_brands]
@@ -651,7 +660,11 @@ def page_produk(page=1):
         non_comedogenic=non_comedogenic
     )
 
-    df_filtered = df_filtered.drop_duplicates(subset=["Nama Produk"]).reset_index(drop=True)
+    df_filtered = (
+        df_filtered
+        .drop_duplicates(subset=["Nama Produk"])
+        .reset_index(drop=True)
+    )
 
     # =============================
     # Pagination
@@ -668,31 +681,43 @@ def page_produk(page=1):
     # =============================
     # Build items
     # =============================
-    # =============================
-# Build items
-# =============================
-items = []
-for _, r in df_page.iterrows():
-    items.append({
-        "nama": r.get("Nama Produk", ""),
-        "brand": r.get("Brand", ""),
-        "kategori": r.get("Kategori", ""),
-        "kandungan": r.get("Kandungan Utama", ""),
-        "image_url": get_image_path(
-            r.get("Kategori", ""),
-            r.get("Nama Produk", ""),
-            r.get("Gambar") or r.get("image", "")
-        ),
-        "manfaat": generate_product_benefits(
-            r.get("Kandungan Utama", ""),
-            r.get("Kategori", "")
-        ),
+    items = []
+    for _, r in df_page.iterrows():
+        items.append({
+            "nama": r.get("Nama Produk", ""),
+            "brand": r.get("Brand", ""),
+            "kategori": r.get("Kategori", ""),
+            "kandungan": r.get("Kandungan Utama", ""),
+            "image_url": get_image_path(
+                r.get("Kategori", ""),
+                r.get("Nama Produk", ""),
+                r.get("Gambar") or r.get("image", "")
+            ),
+            "manfaat": generate_product_benefits(
+                r.get("Kandungan Utama", ""),
+                r.get("Kategori", "")
+            ),
+            "alcohol_free": str(r.get("Alcohol-Free", "")).strip().lower() == "yes",
+            "fragrance_free": str(r.get("Fragrance-Free", "")).strip().lower() == "yes",
+            "non_comedogenic": str(r.get("Non-Comedogenic", "")).strip().lower() == "yes",
+        })
 
-        # 🔑 SESUAI DATASET (Yes / No)
-        "alcohol_free": str(r.get("Alcohol-Free", "")).strip().lower() == "yes",
-        "fragrance_free": str(r.get("Fragrance-Free", "")).strip().lower() == "yes",
-        "non_comedogenic": str(r.get("Non-Comedogenic", "")).strip().lower() == "yes",
-    })
+    return render_template(
+        "produk.html",
+        brands=brands,
+        categories=categories,
+        items=items,
+        search=search,
+        selected_brands=selected_brands,
+        selected_categories=selected_categories,
+        alcohol_free=alcohol_free,
+        fragrance_free=fragrance_free,
+        non_comedogenic=non_comedogenic,
+        page=page,
+        total_pages=total_pages,
+        request=request
+    )
+
 
 def filter_produk(
     df,
@@ -1229,6 +1254,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
