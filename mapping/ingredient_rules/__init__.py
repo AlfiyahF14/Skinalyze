@@ -1,0 +1,2 @@
+from .ingredient_interactions import INGREDIENT_INTERACTIONS
+from .kandungan_dalam_produk import KANDUNGAN_DALAM_PRODUK

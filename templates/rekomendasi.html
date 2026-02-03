@@ -1,0 +1,293 @@
+{% extends "base.html" %}
+{% block body_class %}rekomendasi-page{% endblock %}
+{% block content %}
+<section class="rekomendasi-page pt-32 pb-20 px-6 bg-gradient-to-r from-pink-50 to-green-50">
+  <div class="max-w-4xl mx-auto">
+    
+    <!-- Judul -->
+    <h1 class="text-4xl font-bold text-center mb-4">✨ Temukan Rekomendasi Skincare ✨</h1>
+    <p class="text-gray-600 text-center mb-12">Isi informasi di bawah untuk mendapatkan rekomendasi produk sesuai jenis kulit dan kebutuhanmu.</p>
+
+    <!-- Loader -->
+    <div class="loader hidden" id="loader">
+      <div class="spinner"></div>
+      <p class="mt-2 text-gray-600">Mencari rekomendasi terbaik untukmu...</p>
+    </div>
+
+    <!-- Form Rekomendasi -->
+    <form id="recommendForm" class="bg-white p-8 rounded-xl shadow-md space-y-6">
+      
+      <!-- Kategori Produk -->
+      <div>
+        <label for="category" class="block font-medium mb-2">Kategori Produk</label>
+        <select name="category" id="category" class="w-full border px-4 py-2 rounded-lg" required>
+          <option value="facialwash">Facial Wash</option>
+          <option value="toner">Toner</option>
+          <option value="serum">Serum</option>
+          <option value="moisturizer">Moisturizer</option>
+          <option value="sunscreen">Sunscreen</option>
+        </select>
+      </div>
+
+<!-- Jenis Kulit -->
+<div class="mt-8">
+  <label class="block font-medium mb-4 text-center text-lg">Jenis Kulit</label>
+
+  <!-- BARIS 1 (3 kolom) -->
+  <div class="grid-jenis-atas">
+    
+    <!-- Kulit Kering -->
+    <div class="text-center">
+      <img src="{{ url_for('static', filename='images/Kulit-Kering.png') }}"
+           alt="Kulit Kering"
+           class="w-24 h-24 mx-auto mb-2 rounded-full border">
+      <input type="radio" name="jenis_kulit" required id="kering" value="kering" class="mr-2">
+      <label for="kering">Kering</label>
+    </div>
+
+    <!-- Kulit Berminyak -->
+    <div class="text-center">
+      <img src="{{ url_for('static', filename='images/Kulit-Berminyak.png') }}"
+          alt="Kulit Berminyak"
+          class="w-24 h-24 mx-auto mb-2 rounded-full border">
+      <input type="radio" name="jenis_kulit" id="berminyak" value="berminyak" class="mr-2" required>
+      <label for="berminyak">Berminyak</label>
+    </div>
+
+    <!-- Kulit Kombinasi -->
+    <div class="text-center">
+      <img src="{{ url_for('static', filename='images/Kulit-Kombinasi.png') }}"
+           alt="Kulit Kombinasi"
+           class="w-24 h-24 mx-auto mb-2 rounded-full border">
+      <input type="radio" name="jenis_kulit" required id="kombinasi" value="kombinasi" class="mr-2">
+      <label for="kombinasi">Kombinasi</label>
+    </div>
+
+  </div>
+
+  <!-- BARIS 2 (2 kolom DI TENGAH) -->
+  <div class="grid-jenis-bawah">
+    
+    <!-- Kulit Sensitif -->
+    <div class="text-center">
+      <img src="{{ url_for('static', filename='images/Kulit-Sensitif.png') }}"
+           alt="Kulit Sensitif"
+           class="w-24 h-24 mx-auto mb-2 rounded-full border">
+      <input type="radio" name="jenis_kulit" required id="sensitif" value="sensitif" class="mr-2" required>
+      <label for="sensitif">Sensitif</label>
+    </div>
+
+    <!-- Kulit Normal -->
+    <div class="text-center">
+      <img src="{{ url_for('static', filename='images/Kulit-Normal.png') }}"
+           alt="Kulit Normal"
+           class="w-24 h-24 mx-auto mb-2 rounded-full border">
+      <input type="radio" name="jenis_kulit" required id="normal" value="normal" class="mr-2" required>
+      <label for="normal">Normal</label>
+    </div>
+  </div>
+</div>
+
+
+<!-- Masalah Kulit -->
+<div class="relative">
+  <label class="block font-medium mb-2">Masalah Kulit</label>
+
+  <!-- Trigger -->
+  <div id="masalahTrigger"
+      class="w-full border px-4 py-2 rounded-lg bg-white cursor-pointer flex items-center justify-between">
+    <span>Pilih Masalah Kulit</span>
+
+    <!-- Icon Panah -->
+    <svg id="arrowIcon"
+        class="w-4 h-4 text-gray-500 transition-transform duration-200"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 9l-7 7-7-7" />
+    </svg>
+  </div>
+
+  <!-- Dropdown -->
+  <div id="masalahDropdown"
+       class="absolute z-20 mt-2 w-full bg-white border rounded-lg shadow-md hidden max-h-64 overflow-y-auto">
+
+    <!-- KUSAM & WARNA KULIT -->
+    <p class="px-4 pt-3 text-sm font-semibold text-gray-500">Kusam & Warna Kulit</p>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="kusam" class="mk mr-2">Kusam</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="warna-kulit-tidak-merata" class="mk mr-2">Warna Kulit Tidak Merata</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="noda-hitam" class="mk mr-2">Noda Hitam</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="flek-hitam" class="mk mr-2">Flek Hitam</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="hiperpigmentasi" class="mk mr-2">Hiperpigmentasi</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="noda-bekas-jerawat" class="mk mr-2">Noda Bekas Jerawat</label>
+
+    <!-- JERAWAT & KOMEDO -->
+    <p class="px-4 pt-3 text-sm font-semibold text-gray-500">Jerawat & Komedo</p>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="jerawat" class="mk mr-2">Jerawat</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="jerawat-ringan" class="mk mr-2">Jerawat Ringan</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="komedo" class="mk mr-2">Komedo</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="pori-pori-tersumbat" class="mk mr-2">Pori-pori Tersumbat</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="bekas-jerawat" class="mk mr-2">Bekas Jerawat</label>
+
+    <!-- MINYAK & PORI -->
+    <p class="px-4 pt-3 text-sm font-semibold text-gray-500">Minyak & Pori</p>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="minyak-berlebih" class="mk mr-2">Minyak Berlebih</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="produksi-sebum-tinggi" class="mk mr-2">Produksi Sebum Tinggi</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="pori-pori-besar" class="mk mr-2">Pori-pori Besar</label>
+
+    <!-- KERING & DEHIDRASI -->
+    <p class="px-4 pt-3 text-sm font-semibold text-gray-500">Kering & Dehidrasi</p>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="kulit-kering" class="mk mr-2">Kulit Kering</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="dehidrasi" class="mk mr-2">Dehidrasi</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="kekurangan-hidrasi" class="mk mr-2">Kekurangan Hidrasi</label>
+
+    <!-- SENSITIF -->
+    <p class="px-4 pt-3 text-sm font-semibold text-gray-500">Sensitif & Iritasi</p>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="kulit-sensitif" class="mk mr-2">Kulit Sensitif</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="iritasi" class="mk mr-2">Iritasi</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="kemerahan" class="mk mr-2">Kemerahan</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="gatal-ringan" class="mk mr-2">Gatal Ringan</label>
+
+    <!-- SKIN BARRIER -->
+    <p class="px-4 pt-3 text-sm font-semibold text-gray-500">Skin Barrier</p>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="skin-barrier-rusak" class="mk mr-2">Skin Barrier Rusak</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="skin-barrier-lemah" class="mk mr-2">Skin Barrier Lemah</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="ph-tidak-seimbang" class="mk mr-2">pH Tidak Seimbang</label>
+
+    <!-- PENUAAN -->
+    <p class="px-4 pt-3 text-sm font-semibold text-gray-500">Penuaan</p>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="penuaan-dini" class="mk mr-2">Penuaan Dini</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="garis-halus" class="mk mr-2">Garis Halus</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="kerutan" class="mk mr-2">Kerutan</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="elastisitas-menurun" class="mk mr-2">Elastisitas Menurun</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="kulit-kendur" class="mk mr-2">Kulit Kendur</label>
+
+    <!-- LINGKUNGAN -->
+    <p class="px-4 pt-3 text-sm font-semibold text-gray-500">Lingkungan</p>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="paparan-uv" class="mk mr-2">Paparan UV</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="sering-terpapar-polusi" class="mk mr-2">Sering Terpapar Polusi</label>
+    <label class="flex items-center px-4 py-2"><input type="checkbox" value="blue-light" class="mk mr-2">Blue Light</label>
+    <label class="flex items-center px-4 py-3"><input type="checkbox" value="aktivitas-outdoor" class="mk mr-2">Aktivitas Outdoor</label>
+  </div>
+</div>
+
+
+      <!-- Tombol -->
+      <div class="text-center">
+        <button type="submit" class="btn-primary text-white px-8 py-3 rounded-full font-medium">Cari Rekomendasi</button>
+      </div>
+    </form>
+
+    <!-- Hasil Rekomendasi -->
+    <div id="resultBox" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- hasil diisi via JS -->
+      <!-- contoh 1 card -->
+      <!--
+      <div class="recommend-card bg-white p-6 rounded-xl shadow-md fade-in">
+        <img src="{{ url_for('static', filename='Images/default.jpg') }}" alt="Produk" class="produk-img mb-4 rounded-lg">
+        <h3 class="text-xl font-bold">Nama Produk</h3>
+        <div class="card-details">
+            <p class="detail-row"><strong>Brand:</strong> ${item.brand}</p>
+            <p class="detail-row"><strong>Kategori:</strong> ${kategoriMap[item.kategori] || item.kategori}</p>
+            
+            <p class="ingredient-label"><strong>Kandungan Utama:</strong></p>
+            <p class="ingredient-content">${item.kandungan}</p>
+        </div>
+        <div class="label-box flex flex-wrap gap-2 justify-start mt-3">
+            ${
+                item.alcohol_free
+                ? `<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full">🚫 Alcohol-Free</span>`
+                : ""
+            }
+
+            ${
+                item.fragrance_free
+                ? `<span class="px-2 py-1 bg-pink-100 text-pink-600 rounded-full">🌸 Fragrance-Free</span>`
+                : ""
+            }
+
+            ${
+                item.non_comedogenic
+                ? `<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full">✅ Non-Comedogenic</span>`
+                : ""
+            }
+        </div>
+        <div class="note-alert">
+            <span class="note-icon">⚠️</span>
+            <div><strong>Peringatan:</strong> Produk ini mengandung fragrance...</div>
+        </div>
+      </div>
+      -->
+    </div>
+  </div>
+</section>
+<script>
+    // Fungsi untuk mengurutkan opsi pada dropdown berdasarkan abjad teks
+    function urutkanDropdown(idDropdown) {
+        const selectElement = document.getElementById(idDropdown);
+        
+        // Ambil semua elemen <option>
+        let options = Array.from(selectElement.options);
+        
+        // Pisahkan opsi placeholder ("Pilih Masalah Kulit") agar tidak ikut diurutkan
+        const placeholder = options.shift(); 
+        
+        // Urutkan array options berdasarkan teks (label) secara alfabetis (A-Z)
+        options.sort(function(a, b) {
+            return a.text.localeCompare(b.text);
+        });
+        
+        // Kosongkan dropdown dan tambahkan kembali opsi yang sudah diurutkan
+        selectElement.innerHTML = '';
+        selectElement.appendChild(placeholder); // Tambahkan placeholder di posisi pertama
+        
+        options.forEach(option => {
+            selectElement.appendChild(option);
+        });
+    }
+
+    // Panggil fungsi pengurutan untuk ID 'masalah_kulit'
+    // Gunakan 'DOMContentLoaded' untuk memastikan elemen sudah dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+        urutkanDropdown('masalah_kulit');
+    });
+</script>
+<script>
+const trigger = document.getElementById("masalahTrigger");
+const dropdown = document.getElementById("masalahDropdown");
+const checks = document.querySelectorAll(".mk");
+const form = document.getElementById("recommendForm");
+
+trigger.addEventListener("click", () => {
+  dropdown.classList.toggle("hidden");
+});
+
+checks.forEach(cb => {
+  cb.addEventListener("change", () => {
+    const selected = Array.from(checks).filter(c => c.checked);
+
+    trigger.textContent = selected.length
+      ? selected.map(c => c.parentElement.textContent.trim()).join(", ")
+      : "Pilih Masalah Kulit";
+
+    document.querySelectorAll("input[name='masalah_kulit[]']").forEach(e => e.remove());
+
+    selected.forEach(c => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "masalah_kulit[]";
+      input.value = c.value;
+      form.appendChild(input);
+    });
+  });
+});
+
+document.addEventListener("click", e => {
+  if (!e.target.closest("#masalahTrigger") && !e.target.closest("#masalahDropdown")) {
+    dropdown.classList.add("hidden");
+  }
+});
+</script>
+{% endblock %}

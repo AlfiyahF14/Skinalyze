@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block body_class %}produk-page{% endblock %}
+{% block content %}
+
+<section class="produk-page pt-32 pb-20 px-6 bg-gray-50">
+  <!-- BUTTON FILTER (MOBILE ONLY) -->
+  <button id="btnOpenFilter"
+    class="fixed bottom-4 right-4 z-50 bg-pink-500 text-white px-4 py-3 rounded-full shadow-lg md:hidden">
+    🔍 Filter
+  </button>
+
+  <!-- POPUP FILTER (MOBILE) -->
+  <div id="mobileFilterOverlay"
+    class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden"></div>
+
+  <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+    <!-- Sidebar Filter -->
+    <aside class="bg-white p-6 rounded-xl shadow-md md:col-span-1 filter-sidebar hidden md:block">
+      <h2 class="text-xl font-bold mb-4">Filter Produk</h2>
+
+      <!-- Cari Produk -->
+      <div class="mb-6">
+        <label class="block font-medium mb-2">Cari Produk</label>
+          <input type="text" id="searchText" name="search" placeholder="Nama produk..."
+            value="{{ request.args.get('search', '') }}"
+            class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-400">
+      </div>
+
+      <!-- Brand -->
+        <div class="mb-6">
+          <h4 class="font-semibold mb-2">Brand</h4>
+          <div class="flex flex-col space-y-2 text-sm">
+            <label><input type="checkbox" value="Wardah" class="filter-brand mr-2"
+              {% if 'Wardah' in request.args.getlist('brand') %}checked{% endif%}> Wardah
+            </label>
+            <label><input type="checkbox" value="Emina" class="filter-brand mr-2"
+              {% if 'Emina' in request.args.getlist('brand') %}checked{% endif%}>  Emina
+            </label>
+            <label><input type="checkbox" value="Avoskin" class="filter-brand mr-2"
+              {% if 'Avoskin' in request.args.getlist('brand') %}checked{% endif%}> Avoskin
+            </label>
+            <label><input type="checkbox" value="NPURE" class="filter-brand mr-2"
+              {% if 'NPURE' in request.args.getlist('brand') %}checked{% endif%}> NPURE
+            </label>
+            <label><input type="checkbox" value="Azarine" class="filter-brand mr-2"
+              {% if 'Azarine' in request.args.getlist('brand') %}checked{% endif%}> Azarine
+            </label>
+            <label><input type="checkbox" value="Elsheskin" class="filter-brand mr-2"
+              {% if 'Elsheskin' in request.args.getlist('brand') %}checked{% endif%}> Elsheskin
+            </label>
+            <label><input type="checkbox" value="ERHA" class="filter-brand mr-2"
+              {% if 'ERHA' in request.args.getlist('brand') %}checked{% endif%}> ERHA
+            </label>
+          </div>
+        </div>
+
+        <!-- Kategori -->
+        <div class="mb-6">
+          <h4 class="font-semibold mb-2">Kategori</h4>
+          <div class="flex flex-col space-y-2 text-sm">
+           <label><input type="checkbox" value="facialwash" class="filter-category mr-2"
+              {% if 'facialwash' in request.args.getlist('kategori') %}checked{% endif %}> Facial Wash
+            </label>
+
+            <label><input type="checkbox" value="toner" class="filter-category mr-2"
+              {% if 'toner' in request.args.getlist('kategori') %}checked{% endif %}> Toner
+            </label>
+
+            <label><input type="checkbox" value="serum" class="filter-category mr-2"
+              {% if 'serum' in request.args.getlist('kategori') %}checked{% endif %}> Serum
+            </label>
+
+            <label><input type="checkbox" value="moisturizer" class="filter-category mr-2"
+              {% if 'moisturizer' in request.args.getlist('kategori') %}checked{% endif %}> Moisturizer
+            </label>
+
+            <label><input type="checkbox" value="sunscreen" class="filter-category mr-2"
+              {% if 'sunscreen' in request.args.getlist('kategori') %}checked{% endif %}> Sunscreen
+            </label>
+          </div>
+        </div>
+
+      <!-- Kriteria Khusus -->
+        <div class="mb-6">
+          <h4 class="font-semibold mb-2">Kriteria Khusus</h4>
+          <div class="flex flex-col space-y-2 text-sm">
+            <label><input type="checkbox" id="filterAlcoholFree"
+              {% if request.args.get('alcohol_free') == 'true' %}checked{% endif %}
+              class="mr-2"> 🚫 Alcohol-Free</label>
+
+            <label><input type="checkbox" id="filterFragranceFree"
+              {% if request.args.get('fragrance_free') == 'true' %}checked{% endif %}
+              class="mr-2"> 🌸 Fragrance-Free</label>
+
+            <label><input type="checkbox" id="filterNonComedogenic"
+              {% if request.args.get('non_comedogenic') == 'true' %}checked{% endif %}
+              class="mr-2"> ✅ Non-Comedogenic</label>
+          </div>
+        </div>
+
+      <button id="btnFilter"
+        class="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 transition">
+        Terapkan Filter
+      </button>
+
+      <button id="btnReset" class="reset-btn">Reset Filter</button>
+    </aside>
+
+    <!-- Produk Grid -->
+    <div class="md:col-span-3">
+      <h2 class="text-2xl font-bold mb-6">Daftar Produk Skincare</h2>
+
+      <!-- Grid Produk -->
+      <div id="produkGrid" class="produk-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for item in items %}
+        <div class="produk-card bg-white p-4 rounded-lg shadow hover:shadow-lg transition" 
+             data-nama="{{ item.nama|lower }}" 
+             data-brand="{{ item.brand|lower }}" 
+             data-kategori="{{ item.kategori|lower }}"
+             data-alcohol_free="{{ 'yes' if item.alcohol_free else 'no' }}"
+             data-fragrance_free="{{ 'yes' if item.fragrance_free else 'no' }}"
+             data-non_comedogenic="{{ 'yes' if item.non_comedogenic else 'no' }}">
+
+         <img src="{{ item.image_url }}" 
+              alt="{{ item.nama }}" 
+              class="w-full h-48 object-cover rounded-lg mb-3">
+          <h3 class="font-bold text-lg">{{ item.nama }}</h3>
+          <p class="text-sm text-gray-600">
+            {{ item.brand }} | 
+            {{ item.kategori.replace('facialwash','Facial Wash')
+                            .replace('moisturizer','Moisturizer')
+                            .replace('serum','Serum')
+                            .replace('toner','Toner')
+                            .replace('sunscreen','Sunscreen') }}
+          </p>
+          <p class="text-sm text-gray-500 mt-2">{{ item.kandungan }}</p>
+
+         <!-- Tambahan klaim produk -->
+          <div class="mt-2 flex flex-wrap gap-2 text-sm">
+            {% if item.alcohol_free %}
+              <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded-full">🚫 Alcohol-Free</span>
+            {% endif %}
+            {% if item.fragrance_free %}
+              <span class="px-2 py-1 bg-pink-100 text-pink-600 rounded-full">🌸 Fragrance-Free</span>
+            {% endif %}
+            {% if item.non_comedogenic %}
+              <span class="px-2 py-1 bg-green-100 text-green-600 rounded-full">✅ Non-Comedogenic</span>
+            {% endif %}
+          </div>
+
+          <!-- SPACER -->
+          <div class="card-spacer"></div>
+
+          <button 
+            class="btn-manfaat mt-3 w-full text-sm bg-pink-100 text-pink-600 py-2 rounded-lg hover:bg-pink-200 transition"
+            data-manfaat="{{ item.manfaat }}">
+            Lihat Deskripsi
+          </button>
+           <!-- Debugging sementara -->
+          {# <pre>{{ item | tojson }}</pre> #}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- POPUP MANFAAT PRODUK (GLOBAL, SATU SAJA) -->
+    <div id="manfaatModal" class="fixed inset-0 z-50 hidden">
+      <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+
+      <div class="relative bg-white max-w-md mx-auto mt-40 p-6 rounded-xl shadow-lg">
+        <h3 class="text-lg font-bold mb-3">Deskripsi Produk</h3>
+        <p id="manfaatContent" class="text-sm text-gray-700 leading-relaxed"></p>
+
+        <button 
+          id="closeManfaat"
+          class="mt-4 w-full bg-pink-500 text-white py-2 rounded-lg">
+          Tutup
+        </button>
+      </div>
+    </div>
+
+      <!-- Pagination -->
+      <div class="mt-8 flex justify-center space-x-4">
+        {% if page > 1 %}
+          <a href="{{ url_for('page_produk', page=page-1, **request.args.to_dict()) }}" 
+              class="px-4 py-2 bg-gray-200 rounded">Prev</a>
+        {% endif %}
+
+        {% if page < total_pages %}
+          <a href="{{ url_for('page_produk', page=page+1, **request.args.to_dict()) }}" 
+              class="px-4 py-2 bg-gray-200 rounded">Next</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function applyFilter(resetFilters = false) {
+    let url = "/produk?";
+    let search = document.getElementById("searchText").value;
+
+    // Saat mengetik search dan tekan Enter → filter lama dihapus
+    if (search) {
+        url += "search=" + encodeURIComponent(search) + "&";
+        if (resetFilters) {
+            window.location.href = url;
+            return;
+        }
+    }
+
+    // Kalau tidak reset → kirim filter
+    if (!resetFilters) {
+        document.querySelectorAll(".filter-brand:checked").forEach(cb => {
+            url += "brand=" + encodeURIComponent(cb.value) + "&";
+        });
+
+        document.querySelectorAll(".filter-category:checked").forEach(cb => {
+            url += "kategori=" + encodeURIComponent(cb.value) + "&";
+        });
+
+        if (document.getElementById("filterAlcoholFree").checked) url += "alcohol_free=true&";
+        if (document.getElementById("filterFragranceFree").checked) url += "fragrance_free=true&";
+        if (document.getElementById("filterNonComedogenic").checked) url += "non_comedogenic=true&";
+    }
+
+    window.location.href = url;
+}
+
+// Klik tombol filter tetap seperti biasa
+const btnFilter = document.getElementById("btnFilter");
+
+if (btnFilter) {
+  btnFilter.addEventListener("click", function() {
+    // Tutup popup dulu (khusus mobile)
+      if (window.innerWidth < 768) {
+    sidebar.classList.remove("show");
+    overlay.classList.add("hidden");
+  }
+    applyFilter();
+  });
+}
+
+// Tekan enter pada search → reset seluruh filter lalu search saja
+document.getElementById("searchText").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        applyFilter(true);
+    }
+});
+
+// Tombol reset (akan kita tambahkan)
+document.getElementById("btnReset").addEventListener("click", () => {
+  window.location.href = "/produk";
+});
+
+</script>
+
+<script>
+const btnOpenFilter = document.getElementById("btnOpenFilter");
+const sidebar = document.querySelector(".filter-sidebar");
+const overlay = document.getElementById("mobileFilterOverlay");
+
+if (btnOpenFilter) {
+  btnOpenFilter.addEventListener("click", () => {
+    if (window.innerWidth < 768) {
+      sidebar.classList.remove("hidden");
+      sidebar.classList.add("show");
+      overlay.classList.remove("hidden");
+    }
+  });
+}
+
+if (overlay) {
+  overlay.addEventListener("click", () => {
+    sidebar.classList.remove("show");
+    sidebar.classList.add("hidden");
+    overlay.classList.add("hidden");
+  });
+}
+</script>
+
+<script>
+document.querySelectorAll(".btn-manfaat").forEach(btn => {
+  btn.addEventListener("click", function () {
+    const manfaat = this.dataset.manfaat;
+    document.getElementById("manfaatContent").innerText = manfaat;
+    document.getElementById("manfaatModal").classList.remove("hidden");
+  });
+});
+
+document.getElementById("closeManfaat").addEventListener("click", () => {
+  document.getElementById("manfaatModal").classList.add("hidden");
+});
+</script>
+{% endblock %}

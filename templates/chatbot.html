@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block body_class %}chatbot-page{% endblock %}
+{% block content %}
+<section class="pt-32 pb-20 px-6 bg-slate-50 min-h-screen">
+  <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 flex flex-col h-[85vh] border border-gray-100">
+
+    <!-- Judul -->
+    <h2 class="text-2xl font-bold mb-2 text-center text-slate-800">Skinalyze Assistant</h2>
+    <p class="text-center text-slate-500 mb-6 text-sm">
+      Chatbot Rekomendasi Skincare Berdasarkan Jenis & Masalah Kulit
+    </p>
+
+    <!-- Chat Area -->
+    <div id="chatMessages" 
+        class="flex-1 overflow-y-auto mb-4 p-6 bg-slate-50 rounded-2xl space-y-4 border border-inner border-slate-200">
+    </div>
+
+    <!-- Quick Question -->
+    <div class="mb-4" id="chatQuick">
+      <p class="text-slate-600 text-xs font-semibold uppercase tracking-wider mb-3 px-1">Saran Pertanyaan:</p>
+      <div class="flex flex-wrap gap-2">
+        <button class="bg-white border border-slate-200 text-slate-700 hover:border-teal-400 hover:text-teal-600 px-4 py-2 rounded-xl text-sm transition-all shadow-sm">
+          Kulit saya sensitif, adakah rekomendasi?
+        </button>
+        <button class="bg-white border border-slate-200 text-slate-700 hover:border-teal-400 hover:text-teal-600 px-4 py-2 rounded-xl text-sm transition-all shadow-sm">
+          Serum untuk mencerahkan?
+        </button>
+       <button class="bg-white border border-slate-200 text-slate-700 hover:border-teal-400 hover:text-teal-600 px-4 py-2 rounded-xl text-sm transition-all shadow-sm">
+          Apa fungsi dari kandungan Niacinamide?
+        </button>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <form id="chatForm" class="flex gap-2">
+      <input type="text" id="chatInput" placeholder="Tulis pertanyaanmu..." 
+             class="flex-1 px-5 py-3 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white shadow-sm">
+      <button type="button" id="resetBtn"
+            class="bg-slate-200 text-slate-600 px-5 rounded-2xl hover:bg-slate-300 transition-all font-medium shadow-sm">Reset</button>
+      <button type="submit" 
+              class="bg-slate-800 text-white px-8 rounded-2xl hover:bg-teal-600 transition-all font-medium shadow-md">Kirim</button>
+    </form>
+
+  </div>
+</section>
+
+
+<style>
+  #chatMessages {
+    font-size: 0.8rem !important;
+    line-height: 1.5;
+    scroll-behavior: smooth;
+    transition: opacity 0.3s ease;
+  }
+
+  .bot-message {
+    font-size: 0.8rem;
+  }
+
+  .user-message {
+    font-size: 0.8rem;
+  }
+
+  .message-fade-in {
+    animation: slideUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: transform, opacity;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const chatMessages = document.getElementById("chatMessages");
+  const chatForm = document.getElementById("chatForm");
+  const chatInput = document.getElementById("chatInput");
+  const resetBtn = document.getElementById("resetBtn");
+
+  // =================================================
+  // WELCOME HINT
+  // =================================================
+  function showWelcomeHint() {
+    if (document.getElementById("welcomeHint")) return;
+
+    const welcomeHTML = `
+      <div id="welcomeHint" 
+        class="bg-slate-100 text-slate-500 text-xs rounded-xl p-4 border border-slate-200 italic leading-relaxed transition-opacity duration-300 message-fade-in">
+        🤖 <b class="not-italic text-slate-600">Skinalyze Assistant</b><br><br>
+        Aku bisa bantu kamu untuk:<br>
+        • Rekomendasi skincare sesuai jenis & masalah kulit<br>
+        • Manfaat produk skincare<br>
+        • Info fungsi kandungan skincare<br>
+        • Cek keamanan kombinasi kandungan<br>
+        • Urutan skincare pagi & malam<br><br>
+        <span class="text-[10px]">
+          💡 Contoh: "Rekomendasi serum untuk kulit berminyak & berjerawat"<br>
+          🔄 Gunakan tombol <b>Reset</b> untuk memulai konsultasi baru
+        </span>
+      </div>
+    `;
+    chatMessages.insertAdjacentHTML("beforeend", welcomeHTML);
+  }
+
+  function hideWelcomeHint() {
+    const welcomeHint = document.getElementById("welcomeHint");
+    if (welcomeHint) {
+      welcomeHint.classList.add("opacity-0");
+      setTimeout(() => welcomeHint.remove(), 300);
+    }
+  }
+
+  // =================================================
+  // ON LOAD
+  // =================================================
+  showWelcomeHint(); // ✅ BIARKAN
+
+  // =================================================
+  // SUBMIT CHAT
+  // =================================================
+  chatForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    hideWelcomeHint();
+
+    const sessionId = localStorage.getItem("chat_session_id");
+
+    fetch("/api/chatbot", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: message,
+        session_id: sessionId 
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+     
+      if (data.session_id) {
+        localStorage.setItem("chat_session_id", data.session_id);
+      }
+    });
+  });
+
+  // =================================================
+  // RESET BUTTON (INI YANG DIPERBAIKI)
+  // =================================================
+  resetBtn.addEventListener("click", function () {
+    const currentSessionId = localStorage.getItem("chat_session_id");
+
+    // 1️⃣ Bersihkan UI (AMAN)
+    chatMessages.style.opacity = "0";
+
+    setTimeout(() => {
+      chatMessages.innerHTML = "";
+      chatInput.value = "";
+      chatMessages.style.opacity = "1";
+      showWelcomeHint();
+    }, 300);
+
+    // 2️⃣ Kirim RESET ke backend
+    fetch("/api/chatbot", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: "RESET",
+        session_id: currentSessionId 
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Backend Reset Sukses");
+
+      if (data.session_id) {
+        localStorage.setItem("chat_session_id", data.session_id);
+      }
+    })
+    .catch(err => console.error("Error reset:", err));
+  });
+});
+</script>
+
+{% endblock %}

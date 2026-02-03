@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skinalyze - Skincare Lokal Terbaik</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@400;500;600&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="bg-[#faf9f7] font-['Montserrat',sans-serif] {% block body_class %}{% endblock %}">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
+        <div class="max-w-7xl mx-auto flex justify-between items-center py-3 px-4 md:px-6">
+            <div class="flex items-center">
+                <img src="{{ url_for('static', filename='images/Logo.png') }}" 
+                    alt="Skinalyze Logo" class="h-10 md:h-12 w-auto mr-2 md:mr-4">
+                <h1 class="text-lg md:text-2xl font-bold font-['Playfair Display',serif] text-[#d63384]">Skinalyze</h1>
+            </div>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="{{ url_for('page_home') }}" class="text-gray-700 hover:text-[#FF69B4] transition">Home</a>
+                <a href="{{ url_for('page_produk') }}" class="text-gray-700 hover:text-[#FF69B4] transition">Produk</a>
+                <a href="{{ url_for('page_rekomendasi') }}" class="text-gray-700 hover:text-[#FF69B4] transition">Rekomendasi</a>
+                <a href="{{ url_for('page_chatbot') }}" class="text-gray-700 hover:text-[#FF69B4] transition">Chatbot</a>
+            </div>
+
+            <a href="{{ url_for('page_rekomendasi') }}" class="hidden md:block">
+                <button class="bg-[#FFB6C1] hover:bg-[#d63384] text-white px-4 md:px-6 py-2 rounded-full font-medium text-sm md:text-base transition-all">
+                    Coba Rekomendasi
+                </button>
+            </a>
+
+            <!-- Hamburger Button (HP) -->
+            <button id="hamburgerBtn"
+                    class="md:hidden text-3xl text-pink-500 focus:outline-none">
+                ☰
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t shadow">
+            <a href="{{ url_for('page_home') }}" class="block px-6 py-3">Home</a>
+            <a href="{{ url_for('page_produk') }}" class="block px-6 py-3">Produk</a>
+            <a href="{{ url_for('page_rekomendasi') }}" class="block px-6 py-3">Rekomendasi</a>
+            <a href="{{ url_for('page_chatbot') }}" class="block px-6 py-3">Chatbot</a>
+
+            <div class="px-6 py-4">
+                <a href="{{ url_for('page_rekomendasi') }}">
+                <button class="w-full bg-[#FFB6C1] text-white py-2 rounded-full">
+                    Coba Rekomendasi
+                </button>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <!-- Content Section -->
+    <main class="pt-23 md:pt-23 min-h-screen">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-10 px-6 bg-gray-900 text-gray-300">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Logo & Deskripsi -->
+                <div>
+                   <img src="{{ url_for('static', filename='images/Logo.png') }}" 
+                         alt="Skinalyze Logo" class="logo-img-custom mr-4">
+                    <p class="text-sm leading-relaxed">
+                    Platform rekomendasi skincare lokal terbaik untuk jenis kulitmu.
+                    </p>
+                </div>
+                <!-- Tautan Cepat -->
+                <div>
+                    <h3 class="text-white font-bold mb-4">Tautan Cepat</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{{ url_for('page_home') }}" class="hover:text-pink-300 transition">Home</a></li>
+                        <li><a href="{{ url_for('page_produk') }}" class="hover:text-pink-300 transition">Produk</a></li>
+                        <li><a href="{{ url_for('page_rekomendasi') }}" class="hover:text-pink-300 transition">Rekomendasi</a></li>
+                        <li><a href="{{ url_for('page_chatbot') }}" class="hover:text-pink-300 transition">Chatbot</a></li>
+                    </ul>
+                </div>
+                <!-- Brand -->
+                <div class="text-center md:text-left">
+                    <h3 class="font-bold text-lg mb-4">Brand Lokal</h3>
+                    <ul class="grid grid-cols-2 gap-y-1 text-sm">
+                        <li>Wardah</li>
+                        <li>Emina</li>
+                        <li>Avoskin</li>
+                        <li>Npure</li>
+                        <li>Azarine</li>
+                        <li>Elsheskin</li>
+                        <li>Erha</li>
+                    </ul>
+                </div>
+                <!-- Newsletter -->
+                <div>
+                    <h3 class="text-white font-bold mb-4">Skinalyze, Sahabat Kulitmu</h3>
+                    <p class="mt-2 text-xs opacity-90">Kami bantu pilih produk lokal terbaik untuk kulitmu.</p>
+                </div>
+            </div>
+            <div class="border-t border-white/30 mt-8 pt-6 text-center text-sm">
+                <p>© 2025 Skinalyze. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

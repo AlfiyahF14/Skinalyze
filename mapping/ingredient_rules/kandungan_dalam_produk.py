@@ -1,0 +1,16 @@
+KANDUNGAN_DALAM_PRODUK = {
+    "retinol": ["serum", "moisturizer"],
+    "vitamin c": ["serum", "moisturizer", "sunscreen"],
+    "niacinamide": ["serum", "toner", "moisturizer", "facial wash"],
+    "alpha arbutin": ["serum", "toner"],
+    "aha": ["toner", "serum", "facial wash"],
+    "bha": ["toner", "serum", "facial wash"],
+    "centella": ["serum", "moisturizer", "toner"],
+    "tea tree": ["serum", "facial wash"],
+    "hyaluronic acid": ["serum", "moisturizer", "toner"],
+    "ceramide": ["moisturizer", "serum"],
+    "peptide": ["serum", "moisturizer"],
+    "aloe vera": ["moisturizer", "toner"],
+    "green tea": ["toner", "facial wash"],
+    "panthenol": ["moisturizer", "serum", "toner"],
+}
