@@ -684,9 +684,11 @@ def page_produk(page=1):
                 r.get("Kandungan Utama", ""),
                 r.get("Kategori", "")
             ),
-            "alcohol_free": bool(r.get("Alcohol-Free")),
-            "fragrance_free": bool(r.get("Fragrance-Free")),
-            "non_comedogenic": bool(r.get("Non-Comedogenic")),
+
+            # ✅ SESUAI DATASET (YES / NO)
+            "alcohol_free": str(r.get("Alcohol-Free", "")).strip().lower() == "yes",
+            "fragrance_free": str(r.get("Fragrance-Free", "")).strip().lower() == "yes",
+            "non_comedogenic": str(r.get("Non-Comedogenic", "")).strip().lower() == "yes",
         })
 
     return render_template(
@@ -1240,6 +1242,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
