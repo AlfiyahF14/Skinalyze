@@ -32,6 +32,9 @@ def get_bool_param(name):
     val = request.args.get(name, "").strip().lower()
     return val in ["true", "yes", "1", "on"]
 
+def is_yes(val):
+    return str(val).strip().lower() == "yes"
+
 BASE_DIR = Path(__file__).resolve().parent
 DATASET_DIR = BASE_DIR / "dataset"
 MODELS_DIR = BASE_DIR / "models"
@@ -192,43 +195,27 @@ def load_models():
 # -------------------------
 import re
 def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "") -> str:
-    # 1. Fungsi Normalisasi (Tetap ada untuk membersihkan & dan +)
-    def normalisasi_nama(teks):
-        if not teks or str(teks) == "nan": return ""
-        # Ubah simbol & dan + menjadi underscore
-        teks = str(teks).replace("&", "_").replace("+", "_")
-        # Ubah spasi jadi underscore
-        teks = teks.replace(" ", "_")
-        # Hapus underscore dobel jadi tunggal
-        return re.sub(r'_+', '_', teks).strip("_")
+    default_image = url_for("static", filename="images/default.png")
 
-    # 2. Normalisasi Kategori (SANGAT PENTING!)
-    # Kita ubah spasi jadi underscore (agar "facial wash" jadi "facial_wash")
-    # Tapi kita JANGAN hapus underscore bawaan agar cocok dengan folder GitHub kamu.
-    kat_clean = str(kategori).lower().strip().replace(" ", "_")
-    
-    # 3. Proses Nama File dari Excel
-    if image_col and str(image_col) != "nan":
-        filename = str(image_col).strip()
-        
-        # Ambil nama file saja (hilangkan path folder jika ada di Excel)
-        file_only = filename.split("/")[-1]
-        
-        if '.' in file_only:
-            name_part, ext_part = file_only.rsplit('.', 1)
-        else:
-            name_part, ext_part = file_only, 'png'
-        
-        # Bersihkan nama file dari simbol & dan +
-        name_clean = normalisasi_nama(name_part)
-        filename_final = f"{name_clean}.{ext_part.lower()}"
-        
-        # Jalur akhir: images/facial_wash/nama_file_bersih.png
-        final_path = f"images/{kat_clean}/{filename_final}"
-        return url_for('static', filename=final_path)
+    if not kategori or not image_col or str(image_col).lower() == "nan":
+        return default_image
 
-    # 4. Cadangan jika tidak ada gambar sama sekali
-    return url_for('static', filename='images/default.png')
+    # 🔥 FIX PENTING DI SINI
+    CATEGORY_FOLDER_MAP = {
+        "facialwash": "facial_wash",
+        "facial wash": "facial_wash",
+        "toner": "toner",
+        "serum": "serum",
+        "moisturizer": "moisturizer",
+        "sunscreen": "sunscreen",
+    }
+
+    kat_raw = str(kategori).strip().lower()
+    kat_clean = CATEGORY_FOLDER_MAP.get(kat_raw, kat_raw.replace(" ", "_"))
+
+    filename = str(image_col).strip().split("/")[-1]
+
+    return url_for("static", filename=f"images/{kat_clean}/{filename}")
 
 def apply_filters(df, q="", brand="", prefs=None):
     if q:
@@ -564,9 +551,10 @@ def page_home():
     search = request.args.get("search")
     selected_brands = request.args.getlist("brand")
     selected_categories = request.args.getlist("kategori")
-    alcohol_free = get_bool_param("alcohol_free")
-    fragrance_free = get_bool_param("fragrance_free")
-    non_comedogenic = get_bool_param("non_comedogenic")
+    "alcohol_free": is_yes(r.get("Alcohol-Free")),
+    "fragrance_free": is_yes(r.get("Fragrance-Free")),
+    "non_comedogenic": is_yes(r.get("Non-Comedogenic")),
+
 
     if "Brand" in all_df.columns:
         all_df["Brand"] = all_df["Brand"].astype(str).str.strip().str.upper()
@@ -1027,8 +1015,9 @@ def api_produk():
 
     # Normalisasi kategori (sudah benar)
     catmap = {
-        "facial wash": "facialwash",
-        "facialwash": "facialwash",
+        "facial wash": "facial_wash",
+        "facialwash": "facial_wash",
+        "facial_wash": "facial_wash",
         "moisturizer": "moisturizer",
         "serum": "serum",
         "sunscreen": "sunscreen",
@@ -1243,6 +1232,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
