@@ -1,9 +1,4 @@
 import os
-if __name__ == "__main__":
-    # Mengambil port dari environment variable Railway
-    port = int(os.environ.get("PORT", 5000))
-    # Host harus 0.0.0.0 agar bisa diakses publik
-    app.run(host='0.0.0.0', port=port)
 import uuid
 import re
 import json
@@ -49,6 +44,21 @@ MODEL_DIR_MAP = {
     "sunscreen": "sunscreen",
     "toner": "toner",
 }
+
+app = Flask(
+    __name__,
+    template_folder=BASE_DIR.joinpath("templates").as_posix(),
+    static_folder=BASE_DIR.joinpath("static").as_posix(),
+)
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "7d8f9e0a1b2c3d4e5f6g7h8i9j0k1l2m")
+app.wsgi_app = ProxyFix(
+    app.wsgi_app, 
+    x_for=1, 
+    x_proto=1, 
+    x_host=1, 
+    x_port=1, 
+    x_prefix=1
+)
 
 # -------------------------
 # Util Dataset
@@ -180,21 +190,6 @@ def load_models():
 # -------------------------
 # Flask init
 # -------------------------
-app = Flask(
-    __name__,
-    template_folder=BASE_DIR.joinpath("templates").as_posix(),
-    static_folder=BASE_DIR.joinpath("static").as_posix(),
-)
-app.secret_key = os.getenv("FLASK_SECRET_KEY", "7d8f9e0a1b2c3d4e5f6g7h8i9j0k1l2m")
-app.wsgi_app = ProxyFix(
-    app.wsgi_app, 
-    x_for=1, 
-    x_proto=1, 
-    x_host=1, 
-    x_port=1, 
-    x_prefix=1
-)
-
 def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "") -> str:
     """Helper untuk mencari gambar yang fleksibel di Linux."""
     # Gunakan folder 'images' (huruf kecil semua lebih aman di Linux)
@@ -1216,4 +1211,5 @@ def chatbot_api():
 # MAIN
 # -------------------------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
