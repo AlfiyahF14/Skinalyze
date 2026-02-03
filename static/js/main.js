@@ -19,9 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const card = document.createElement("div");
             card.className = "produk-card fade-in";
 
-            const imgSrc = (p.image_url && p.image_url.trim() !== "") 
-                ? p.image_url 
-                : "/static/Images/default.jpg";
+            const imgSrc = item.image
+                ? `/static/images/${item.kategori}/${item.image}`
+                : "/static/images/default.png";
 
 
             card.innerHTML = `
@@ -332,3 +332,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
