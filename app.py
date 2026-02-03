@@ -198,16 +198,17 @@ def load_models():
 # -------------------------
 # Flask init
 # -------------------------
-def get_image_path(kategori="", image_col=""):
+def get_image_path(kategori="", nama_produk="", image_col=""):
     default_image = url_for("static", filename="images/default.png")
 
+    # Kalau kategori kosong atau kolom gambar kosong → pakai default
     if not kategori or not image_col or str(image_col).lower() == "nan":
         return default_image
 
     CATEGORY_FOLDER_MAP = {
-        "facialwash": "facial_wash",
-        "facial wash": "facial_wash",
-        "facial_wash": "facial_wash",
+        "facialwash": "facialwash",
+        "facial wash": "facialwash",
+        "facial_wash": "facialwash",
         "toner": "toner",
         "serum": "serum",
         "moisturizer": "moisturizer",
@@ -215,11 +216,22 @@ def get_image_path(kategori="", image_col=""):
     }
 
     kat = str(kategori).strip().lower()
-    folder = CATEGORY_FOLDER_MAP.get(kat, kat.replace(" ", "_"))
+    folder = CATEGORY_FOLDER_MAP.get(kat, kat.replace(" ", ""))
 
+    # Ambil hanya nama file (tanpa path)
     filename = str(image_col).split("/")[-1]
 
-    return url_for("static", filename=f"images/{folder}/{filename}")
+    # Normalisasi biar cocok dengan file di folder
+    clean_filename = normalize_filename(filename)
+
+    # Cek apakah file benar-benar ada
+    file_path = os.path.join("static", "images", folder, clean_filename)
+
+    if os.path.exists(file_path):
+        return url_for("static", filename=f"images/{folder}/{clean_filename}")
+
+    # Kalau tidak ada → fallback ke default
+    return default_image
 
 # 🔥 INI WAJIB
 app.jinja_env.globals.update(get_image_path=get_image_path)
@@ -1237,6 +1249,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
