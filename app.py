@@ -594,8 +594,9 @@ def page_home():
         "kategori": r.get("Kategori", ""),
         "kandungan": r.get("Kandungan Utama", ""),
         "image_url": get_image_path(
-                r.get("Kategori", ""),
-                r.get("Gambar") or r.get("image", "")
+            r.get("Kategori", ""),
+            r.get("Nama Produk", ""),
+            r.get("Gambar") or r.get("image", "")
         ),
 
         "manfaat": generate_product_benefits(
@@ -1236,6 +1237,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
