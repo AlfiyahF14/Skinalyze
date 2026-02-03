@@ -178,14 +178,6 @@
       </div>
 
       <div class="mt-8 flex justify-center">
-        <a href="{{ url_for('page_produk', page=1) }}" class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full font-medium transition">
-          Lihat Semua Produk
-        </a>
-      </div>
-    </div>
-  </div>
-
-      <div class="mt-8 flex justify-center">
         <a href="{{ url_for('page_produk', page=1) }}" 
            class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full font-medium transition">
           Lihat Semua Produk
@@ -286,4 +278,5 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
   document.getElementById("manfaatModal").classList.add("hidden");
 });
 </script>
+
 {% endblock %}
