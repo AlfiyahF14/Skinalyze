@@ -67,8 +67,10 @@ def normalize_key(text: str) -> str:
     return normalize_filename(text).lower()
 
 def normalize_filename(name: str) -> str:
-    name = name.strip()
+    name = name.lower().strip()
     name = name.replace(" ", "_")
+    name = re.sub(r"[+]+", "", name)   # HAPUS +++
+    name = re.sub(r"[^a-z0-9_]", "", name)  # HAPUS karakter aneh
     name = re.sub(r"_+", "_", name)
     return name
 
@@ -1234,6 +1236,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
