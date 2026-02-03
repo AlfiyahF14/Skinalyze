@@ -144,8 +144,8 @@
              data-fragrance_free="{{ 'yes' if item.fragrance_free else 'no' }}"
              data-non_comedogenic="{{ 'yes' if item.non_comedogenic else 'no' }}">
 
-          <img src="{{ url_for('static', filename=item.image_url) }}" 
-               alt="{{ item.nama }}" 
+          <img src="{{ item.image_url }}"
+               alt="{{ item.nama }}"
                class="w-full h-48 object-cover rounded-lg mb-3">
           <h3 class="font-bold text-lg">{{ item.nama }}</h3>
           <p class="text-sm text-gray-600">
@@ -316,6 +316,7 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
 });
 </script>
 {% endblock %}
+
 
 
 
