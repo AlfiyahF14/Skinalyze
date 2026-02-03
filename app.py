@@ -685,23 +685,23 @@ def page_produk(page=1):
 
         for _, r in df_page.iterrows():
             items.append({
-            "nama": r.get("Nama Produk", ""),
-            "brand": r.get("Brand", ""),
-            "kategori": r.get("Kategori", ""),
-            "kandungan": r.get("Kandungan Utama", ""),
-            "image_url": get_image_path(
-                r.get("Kategori", ""),
-                r.get("Nama Produk", ""),
-                r.get("Gambar") or r.get("image", "")
-            ),
-            "manfaat": generate_product_benefits(
-                r.get("Kandungan Utama", ""),
-                r.get("Kategori", "")
-            ),
-            "alcohol_free": bool(r.get("Alcohol-Free")),
-            "fragrance_free": bool(r.get("Fragrance-Free")),
-            "non_comedogenic": bool(r.get("Non-Comedogenic")),
-        })
+                "nama": r.get("Nama Produk", ""), 
+                "brand": r.get("Brand", ""),
+                "kategori": r.get("Kategori", ""),
+                "kandungan": r.get("Kandungan Utama", ""),
+                "image_url": get_image_path(
+                    r.get("Kategori", ""),
+                    r.get("Nama Produk", ""),
+                    r.get("Gambar") or r.get("image", "")
+                ),
+                "manfaat": generate_product_benefits(
+                    r.get("Kandungan Utama", ""),
+                    r.get("Kategori", "")
+                ),
+                "alcohol_free": bool(r.get("Alcohol-Free")),
+                "fragrance_free": bool(r.get("Fragrance-Free")),
+                "non_comedogenic": bool(r.get("Non-Comedogenic")),
+            })
     else:
         total_pages = 1
 
@@ -1232,6 +1232,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
