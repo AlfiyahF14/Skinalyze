@@ -255,81 +255,6 @@
     });
 </script>
 <script>
-const kategoriMap = {
-  "facialwash": "Facial Wash",
-  "toner": "Toner",
-  "serum": "Serum",
-  "moisturizer": "Moisturizer",
-  "sunscreen": "Sunscreen"
-};
-
-function renderRecommendations(data) {
-  const resultBox = document.getElementById("resultBox");
-  resultBox.innerHTML = "";
-
-  if (!data.results || data.results.length === 0) {
-    resultBox.innerHTML = `
-      <div class="col-span-full text-center text-gray-500 py-10">
-        Tidak ada rekomendasi yang cocok 🥲
-      </div>
-    `;
-    return;
-  }
-
-  data.results.forEach(item => {
-    const card = document.createElement("div");
-    card.className = "recommend-card bg-white p-6 rounded-xl shadow-md fade-in";
-
-    card.innerHTML = `
-      <img 
-        src="${item.image_url || '/static/images/default.png'}"
-        onerror="this.src='/static/images/default.png'"
-        alt="Produk"
-        class="produk-img mb-4 rounded-lg"
-      >
-
-      <h3 class="text-xl font-bold">${item.nama_produk || "Nama Produk"}</h3>
-
-      <div class="card-details">
-        <p class="detail-row"><strong>Brand:</strong> ${item.brand}</p>
-        <p class="detail-row"><strong>Kategori:</strong> ${kategoriMap[item.kategori] || item.kategori}</p>
-
-        <p class="ingredient-label"><strong>Kandungan Utama:</strong></p>
-        <p class="ingredient-content">${item.kandungan}</p>
-      </div>
-
-      <div class="label-box flex flex-wrap gap-2 justify-start mt-3">
-        ${item.alcohol_free
-          ? `<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full">🚫 Alcohol-Free</span>`
-          : ""
-        }
-
-        ${item.fragrance_free
-          ? `<span class="px-2 py-1 bg-pink-100 text-pink-600 rounded-full">🌸 Fragrance-Free</span>`
-          : ""
-        }
-
-        ${item.non_comedogenic
-          ? `<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full">✅ Non-Comedogenic</span>`
-          : ""
-        }
-      </div>
-
-      ${
-        item.note && item.note.length
-          ? `<div class="note-alert mt-3">
-               <span class="note-icon">⚠️</span>
-               <div><strong>Peringatan:</strong> ${item.note.join(" | ")}</div>
-             </div>`
-          : ""
-      }
-    `;
-
-    resultBox.appendChild(card);
-  });
-}
-</script>
-<script>
 const trigger = document.getElementById("masalahTrigger");
 const dropdown = document.getElementById("masalahDropdown");
 const checks = document.querySelectorAll(".mk");
@@ -365,24 +290,8 @@ document.addEventListener("click", e => {
   }
 });
 </script>
-<script>
-document.getElementById("recommendForm").addEventListener("submit", function(e) {
-  e.preventDefault(); // biar halaman tidak reload
-
-  const formData = new FormData(this);
-
-  fetch("/api/rekomendasi", {
-    method: "POST",
-    body: formData
-  })
-  .then(res => res.json())
-  .then(data => {
-    renderRecommendations(data);
-  })
-  .catch(err => console.error("Error:", err));
-});
-</script>
 {% endblock %}
+
 
 
 
