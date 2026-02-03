@@ -618,27 +618,29 @@ def page_home():
 @app.route("/produk/page/<int:page>")
 def page_produk(page=1):
     all_df = pd.concat(list(DATASET.values())) if DATASET else pd.DataFrame()
-    print("DEBUG KATEGORI UNIQUE:", all_df["Kategori"].unique())
+
     brands = sorted(all_df["Brand"].dropna().unique().tolist()) if "Brand" in all_df.columns else []
     categories = sorted(all_df["Kategori"].dropna().unique().tolist()) if "Kategori" in all_df.columns else []
 
-    # Ambil filter dari request (query string)
+    # =============================
+    # Ambil filter dari query string
+    # =============================
     search = request.args.get("search")
     selected_brands = request.args.getlist("brand")
     selected_categories = request.args.getlist("kategori")
-    "alcohol_free": bool(r.get("Alcohol-Free")),
-    "fragrance_free": bool(r.get("Fragrance-Free")),
-    "non_comedogenic": bool(r.get("Non-Comedogenic")),
 
-    prefs = {
-    "Alcohol-Free": alcohol_free,
-    "Fragrance-Free": fragrance_free,
-    "Non-Comedogenic": non_comedogenic,
-}
+    alcohol_free = request.args.get("alcohol_free") == "true"
+    fragrance_free = request.args.get("fragrance_free") == "true"
+    non_comedogenic = request.args.get("non_comedogenic") == "true"
 
-    all_df["Brand"] = all_df["Brand"].astype(str).str.strip().str.upper()
-    selected_brands = [b.upper() for b in selected_brands]
+    # Normalisasi brand
+    if "Brand" in all_df.columns:
+        all_df["Brand"] = all_df["Brand"].astype(str).str.strip().str.upper()
+        selected_brands = [b.upper() for b in selected_brands]
 
+    # =============================
+    # Apply filter
+    # =============================
     df_filtered = filter_produk(
         all_df,
         search=search,
@@ -649,45 +651,43 @@ def page_produk(page=1):
         non_comedogenic=non_comedogenic
     )
 
-    # Pastikan tidak ada duplikat
     df_filtered = df_filtered.drop_duplicates(subset=["Nama Produk"]).reset_index(drop=True)
 
-    items = []
+    # =============================
+    # Pagination
+    # =============================
     per_page = 12
     total = len(df_filtered)
-    total_pages = (total + per_page - 1) // per_page
+    total_pages = max(1, (total + per_page - 1) // per_page)
 
-    if total > 0:
-        if page < 1:
-            page = 1
-        if page > total_pages:
-            page = total_pages
+    page = max(1, min(page, total_pages))
+    start = (page - 1) * per_page
+    end = start + per_page
+    df_page = df_filtered.iloc[start:end]
 
-        start = (page - 1) * per_page
-        end = start + per_page
-        df_page = df_filtered.iloc[start:end]
-
-        for _, r in df_page.iterrows():
-            items.append({
-                "nama": r.get("Nama Produk", ""), 
-                "brand": r.get("Brand", ""),
-                "kategori": r.get("Kategori", ""),
-                "kandungan": r.get("Kandungan Utama", ""),
-                "image_url": get_image_path(
-                    r.get("Kategori", ""),
-                    r.get("Nama Produk", ""),
-                    r.get("Gambar") or r.get("image", "")
-                ),
-                "manfaat": generate_product_benefits(
-                    r.get("Kandungan Utama", ""),
-                    r.get("Kategori", "")
-                ),
-                "alcohol_free": bool(r.get("Alcohol-Free")),
-                "fragrance_free": bool(r.get("Fragrance-Free")),
-                "non_comedogenic": bool(r.get("Non-Comedogenic")),
-            })
-    else:
-        total_pages = 1
+    # =============================
+    # Build items
+    # =============================
+    items = []
+    for _, r in df_page.iterrows():
+        items.append({
+            "nama": r.get("Nama Produk", ""),
+            "brand": r.get("Brand", ""),
+            "kategori": r.get("Kategori", ""),
+            "kandungan": r.get("Kandungan Utama", ""),
+            "image_url": get_image_path(
+                r.get("Kategori", ""),
+                r.get("Nama Produk", ""),
+                r.get("Gambar") or r.get("image", "")
+            ),
+            "manfaat": generate_product_benefits(
+                r.get("Kandungan Utama", ""),
+                r.get("Kategori", "")
+            ),
+            "alcohol_free": bool(r.get("Alcohol-Free")),
+            "fragrance_free": bool(r.get("Fragrance-Free")),
+            "non_comedogenic": bool(r.get("Non-Comedogenic")),
+        })
 
     return render_template(
         "produk.html",
@@ -703,7 +703,7 @@ def page_produk(page=1):
         page=page,
         total_pages=total_pages,
         request=request
-)
+    )
 
 def filter_produk(
     df,
@@ -1240,6 +1240,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
