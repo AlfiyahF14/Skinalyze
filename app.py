@@ -191,9 +191,6 @@ def load_models():
 # Flask init
 # -------------------------
 import re
-
-import re
-
 def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "") -> str:
     # 1. Fungsi Normalisasi (Tetap ada untuk membersihkan & dan +)
     def normalisasi_nama(teks):
@@ -1146,9 +1143,23 @@ def api_rekomendasi():
         "Non-Comedogenic": prefs_input.get("non_comedogenic", False),
     }
 
-    results = recommend(category, jenis_kulit, masalah_kulit, prefs, top_k=10)
+    raw_results = recommend(category, jenis_kulit, masalah_kulit, prefs, top_k=10)
 
-    return jsonify({"items": results})
+    items = []
+    for r in raw_results:
+        img_col = r.get("Gambar") or r.get("image") or ""
+
+        items.append({
+            **r,
+            "image_url": get_image_path(
+                r.get("Kategori", ""),
+                r.get("Nama Produk", ""),
+                img_col
+            )
+        })
+
+    return jsonify({"items": items})
+
 
 # -------------------------
 # API: Brands
@@ -1232,6 +1243,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
