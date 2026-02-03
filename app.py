@@ -551,10 +551,9 @@ def page_home():
     search = request.args.get("search")
     selected_brands = request.args.getlist("brand")
     selected_categories = request.args.getlist("kategori")
-    alcohol_free = request.args.get("alcohol_free") == "1"
-    fragrance_free = request.args.get("fragrance_free") == "1"
-    non_comedogenic = request.args.get("non_comedogenic") == "1"
-    
+    alcohol_free = request.args.get("alcohol_free") == "true"
+    fragrance_free = request.args.get("fragrance_free") == "true"
+    non_comedogenic = request.args.get("non_comedogenic") == "true"
 
     if "Brand" in all_df.columns:
         all_df["Brand"] = all_df["Brand"].astype(str).str.strip().str.upper()
@@ -728,6 +727,8 @@ def filter_produk(
         df = df[df["Brand"].isin(brands)]
 
     if categories:
+        df["Kategori"] = df["Kategori"].astype(str).str.lower().str.replace(" ", "")
+        categories = [c.lower().replace(" ", "") for c in categories]
         df = df[df["Kategori"].isin(categories)]
 
     if alcohol_free:
@@ -1239,6 +1240,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
