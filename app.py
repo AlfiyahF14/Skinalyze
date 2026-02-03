@@ -551,10 +551,10 @@ def page_home():
     search = request.args.get("search")
     selected_brands = request.args.getlist("brand")
     selected_categories = request.args.getlist("kategori")
-    "alcohol_free": is_yes(r.get("Alcohol-Free")),
-    "fragrance_free": is_yes(r.get("Fragrance-Free")),
-    "non_comedogenic": is_yes(r.get("Non-Comedogenic")),
-
+    alcohol_free = request.args.get("alcohol_free") == "1"
+    fragrance_free = request.args.get("fragrance_free") == "1"
+    non_comedogenic = request.args.get("non_comedogenic") == "1"
+    
 
     if "Brand" in all_df.columns:
         all_df["Brand"] = all_df["Brand"].astype(str).str.strip().str.upper()
@@ -627,9 +627,9 @@ def page_produk(page=1):
     search = request.args.get("search")
     selected_brands = request.args.getlist("brand")
     selected_categories = request.args.getlist("kategori")
-    alcohol_free = get_bool_param("alcohol_free")
-    fragrance_free = get_bool_param("fragrance_free")
-    non_comedogenic = get_bool_param("non_comedogenic")
+    "alcohol_free": bool(r.get("Alcohol-Free")),
+    "fragrance_free": bool(r.get("Fragrance-Free")),
+    "non_comedogenic": bool(r.get("Non-Comedogenic")),
 
     prefs = {
     "Alcohol-Free": alcohol_free,
@@ -706,30 +706,37 @@ def page_produk(page=1):
         request=request
 )
 
-def filter_produk(df, search=None, brands=None, categories=None, non_comedogenic=False, fragrance_free=False, alcohol_free=False):
-    
+def filter_produk(
+    df,
+    search=None,
+    brands=None,
+    categories=None,
+    alcohol_free=False,
+    fragrance_free=False,
+    non_comedogenic=False
+):
     df = df.copy()
 
     if search:
+        s = search.lower()
         df = df[
-            df["Brand"].str.contains(search, case=False, na=False) |
-            df["Nama Produk"].str.contains(search, case=False, na=False) |
-            df.get("Kandungan Utama", "").astype(str).str.contains(search, case=False, na=False)
+            df["Nama Produk"].astype(str).str.lower().str.contains(s, na=False) |
+            df["Kandungan Utama"].astype(str).str.lower().str.contains(s, na=False)
         ]
 
     if brands:
         df = df[df["Brand"].isin(brands)]
 
     if categories:
-        df = df[df["Kategori"].astype(str).str.lower().isin([c.lower() for c in categories])]
+        df = df[df["Kategori"].isin(categories)]
 
-    if alcohol_free and "Alcohol-Free" in df.columns:
+    if alcohol_free:
         df = df[df["Alcohol-Free"] == True]
-    
-    if fragrance_free and "Fragrance-Free" in df.columns:
+
+    if fragrance_free:
         df = df[df["Fragrance-Free"] == True]
 
-    if non_comedogenic and "Non-Comedogenic" in df.columns:
+    if non_comedogenic:
         df = df[df["Non-Comedogenic"] == True]
 
     return df
@@ -1232,6 +1239,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
