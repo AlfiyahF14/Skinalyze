@@ -1136,23 +1136,9 @@ def api_rekomendasi():
         "Non-Comedogenic": prefs_input.get("non_comedogenic", False),
     }
 
-    raw_results = recommend(category, jenis_kulit, masalah_kulit, prefs, top_k=10)
+    results = recommend(category, jenis_kulit, masalah_kulit, prefs, top_k=10)
 
-    items = []
-    for r in raw_results:
-        img_col = r.get("Gambar") or r.get("image") or ""
-
-        items.append({
-            **r,
-            "image_url": get_image_path(
-                r.get("Kategori", ""),
-                r.get("Nama Produk", ""),
-                img_col
-            )
-        })
-
-    return jsonify({"items": items})
-
+    return jsonify({"items": results})
 
 # -------------------------
 # API: Brands
@@ -1236,6 +1222,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
