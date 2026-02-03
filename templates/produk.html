@@ -84,17 +84,40 @@
         <div class="mb-6">
           <h4 class="font-semibold mb-2">Kriteria Khusus</h4>
           <div class="flex flex-col space-y-2 text-sm">
-            <label><input type="checkbox" id="filterAlcoholFree"
-              {% if request.args.get('alcohol_free') == 'true' %}checked{% endif %}
-              class="mr-2"> 🚫 Alcohol-Free</label>
-
-            <label><input type="checkbox" id="filterFragranceFree"
-              {% if request.args.get('fragrance_free') == 'true' %}checked{% endif %}
-              class="mr-2"> 🌸 Fragrance-Free</label>
-
-            <label><input type="checkbox" id="filterNonComedogenic"
-              {% if request.args.get('non_comedogenic') == 'true' %}checked{% endif %}
-              class="mr-2"> ✅ Non-Comedogenic</label>
+        
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                id="filterAlcoholFree"
+                name="alcohol_free"
+                value="true"
+                {% if request.args.get('alcohol_free') == 'true' %}checked{% endif %}
+                class="mr-2">
+              🚫 Alcohol-Free
+            </label>
+        
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                id="filterFragranceFree"
+                name="fragrance_free"
+                value="true"
+                {% if request.args.get('fragrance_free') == 'true' %}checked{% endif %}
+                class="mr-2">
+              🌸 Fragrance-Free
+            </label>
+        
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                id="filterNonComedogenic"
+                name="non_comedogenic"
+                value="true"
+                {% if request.args.get('non_comedogenic') == 'true' %}checked{% endif %}
+                class="mr-2">
+              ✅ Non-Comedogenic
+            </label>
+        
           </div>
         </div>
 
@@ -293,6 +316,7 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
 });
 </script>
 {% endblock %}
+
 
 
 
