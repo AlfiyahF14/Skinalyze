@@ -196,43 +196,31 @@ def load_models():
 # -------------------------
 # Flask init
 # -------------------------
-def get_image_path(kategori="", nama_produk="", image_col=""):
-    try:
-        import os, re
-        from flask import url_for
+def get_image_path(kategori="", image_col=""):
+    default_image = url_for("static", filename="images/default.png")
 
-        default_image = url_for("static", filename="images/default.png")
-
-        if not kategori or not image_col:
-            return default_image
-
-        CATEGORY_FOLDER_MAP = {
-            "facialwash": "facial_wash",
-            "facial wash": "facial_wash",
-            "facial_wash": "facial_wash",
-            "toner": "toner",
-            "serum": "serum",
-            "moisturizer": "moisturizer",
-            "sunscreen": "sunscreen",
-        }
-
-        kat = str(kategori).strip().lower()
-        kat_clean = CATEGORY_FOLDER_MAP.get(kat, kat.replace(" ", "_"))
-
-        filename = str(image_col).split("/")[-1]
-        filename = filename.replace(" ", "_")
-
-        path = f"images/{kat_clean}/{filename}"
-        full_path = os.path.join("static", path)
-
-        if os.path.exists(full_path):
-            return url_for("static", filename=path)
-
+    if not kategori or not image_col or str(image_col).lower() == "nan":
         return default_image
 
-    except Exception as e:
-        print("IMAGE ERROR:", e)
-        return "/static/images/default.png"
+    CATEGORY_FOLDER_MAP = {
+        "facialwash": "facial_wash",
+        "facial wash": "facial_wash",
+        "facial_wash": "facial_wash",
+        "toner": "toner",
+        "serum": "serum",
+        "moisturizer": "moisturizer",
+        "sunscreen": "sunscreen",
+    }
+
+    kat = str(kategori).strip().lower()
+    folder = CATEGORY_FOLDER_MAP.get(kat, kat.replace(" ", "_"))
+
+    filename = str(image_col).split("/")[-1]
+
+    return url_for("static", filename=f"images/{folder}/{filename}")
+
+# 🔥 INI WAJIB
+app.jinja_env.globals.update(get_image_path=get_image_path)
 
 def apply_filters(df, q="", brand="", prefs=None):
     if q:
@@ -1247,6 +1235,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
