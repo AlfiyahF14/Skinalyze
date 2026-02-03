@@ -223,7 +223,7 @@ def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "
             name_part, ext_part = file_only, 'png'
         
         # Bersihkan nama file dari simbol & dan +
-        name_clean = normalisasi_nama(name_part).lower()
+        name_clean = normalisasi_nama(name_part)
         filename_final = f"{name_clean}.{ext_part.lower()}"
         
         # Jalur akhir: images/facial_wash/nama_file_bersih.png
@@ -1232,6 +1232,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
