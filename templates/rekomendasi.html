@@ -186,12 +186,9 @@
       <!-- contoh 1 card -->
       <!--
       <div class="recommend-card bg-white p-6 rounded-xl shadow-md fade-in">
-        <img 
-            src="${item.image_url ? item.image_url : '/static/images/default.png'}"
-            onerror="this.src='/static/images/default.png'"
-            alt="Produk"
-            class="produk-img mb-4 rounded-lg"
-          >
+        <img src="{{ item.image_url }}"
+               alt="{{ item.nama }}"
+               class="w-full h-48 object-cover rounded-lg mb-3">
         <h3 class="text-xl font-bold">Nama Produk</h3>
         <div class="card-details">
             <p class="detail-row"><strong>Brand:</strong> ${item.brand}</p>
@@ -296,6 +293,7 @@ document.addEventListener("click", e => {
 });
 </script>
 {% endblock %}
+
 
 
 
