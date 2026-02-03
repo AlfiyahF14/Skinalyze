@@ -214,17 +214,9 @@ def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "
         str(kategori).strip().lower().replace(" ", "_")
     )
 
-    # ambil nama file dari dataset
-    raw_filename = str(image_col).split("/")[-1]
-    filename = normalize_filename(raw_filename)
+    filename = str(image_col).strip().split("/")[-1]
 
-    full_path = os.path.join("static", "images", kat_clean, filename)
-
-    # 🔐 CEK FILE ADA ATAU TIDAK
-    if os.path.exists(full_path):
-        return url_for("static", filename=f"images/{kat_clean}/{filename}")
-    else:
-        return default_image
+    return url_for("static", filename=f"images/{kat_clean}/{filename}")
 
 def apply_filters(df, q="", brand="", prefs=None):
     if q:
@@ -1239,6 +1231,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
