@@ -225,7 +225,7 @@ def get_image_path(kategori="", nama_produk="", image_col=""):
     clean_filename = normalize_filename(filename)
 
     # Cek apakah file benar-benar ada
-    file_path = os.path.join("static", "images", folder, clean_filename)
+    file_path = os.path.join(app.root_path, "static", "images", folder, clean_filename)
 
     if os.path.exists(file_path):
         return url_for("static", filename=f"images/{folder}/{clean_filename}")
@@ -694,9 +694,10 @@ def page_produk(page=1):
             "kategori": r.get("Kategori", ""),
             "kandungan": r.get("Kandungan Utama", ""),
             "image_url": get_image_path(
-                r.get("Kategori", ""),
-                r.get("Gambar") or r.get("image", "")
-            ),
+            r.get("Kategori", ""),
+            r.get("Nama Produk", ""),
+            r.get("Gambar") or r.get("image", "")
+        ),
             "manfaat": generate_product_benefits(
                 r.get("Kandungan Utama", ""),
                 r.get("Kategori", "")
@@ -1249,6 +1250,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
