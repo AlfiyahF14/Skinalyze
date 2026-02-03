@@ -190,34 +190,47 @@ def load_models():
 # -------------------------
 # Flask init
 # -------------------------
+import re
+
 def get_image_path(kategori: str = "", nama_produk: str = "", image_col: str = "") -> str:
-    # 1. Pastikan kategori bersih (contoh: "Facial Wash" -> "facialwash")
+    # 1. Fungsi kecil untuk membersihkan simbol aneh
+    def normalisasi_nama(teks):
+        if not teks or str(teks) == "nan":
+            return ""
+        # Ubah simbol & dan + menjadi underscore, lalu hapus spasi ganda
+        teks = str(teks).replace("&", "_").replace("+", "_")
+        # Ubah spasi jadi underscore
+        teks = teks.replace(" ", "_")
+        # Hapus underscore yang dobel (misal __ jadi _)
+        return re.sub(r'_+', '_', teks).strip("_")
+
+    # 2. Pastikan kategori bersih untuk folder
     kat_clean = str(kategori).lower().replace(" ", "").replace("_", "")
     
-    # 2. Jika ada nama file di kolom Excel
+    # 3. Ambil nama file dari Excel dan normalisasi
     if image_col and str(image_col) != "nan":
         filename = str(image_col).strip()
         
-        # Jika di Excel cuma "Emina.png", kita paksa cari di "images/[kategori]/Emina.png"
+        # Pisahkan nama file dan ekstensi (misal: "Emina+Serum.png")
+        name_part = filename.rsplit('.', 1)[0]
+        ext_part = filename.rsplit('.', 1)[1] if '.' in filename else 'png'
+        
+        # BERSIHKAN SIMBOL DI SINI
+        name_clean = normalisasi_nama(name_part)
+        filename_final = f"{name_clean}.{ext_part.lower()}"
+        
+        # Rangkai jalurnya
         if "/" not in filename:
-            final_path = f"images/{kat_clean}/{filename}"
+            final_path = f"images/{kat_clean}/{filename_final}"
         else:
-            # Jika di Excel masih ada "facial_wash/Emina.png"
-            final_path = f"images/{filename}"
+            # Jika ada folder di awal, kita ambil nama filenya saja setelah "/"
+            pure_file = filename.split("/")[-1]
+            name_pure = pure_file.rsplit('.', 1)[0]
+            filename_final = f"{normalisasi_nama(name_pure)}.{ext_part.lower()}"
+            final_path = f"images/{kat_clean}/{filename_final}"
             
         return url_for('static', filename=final_path)
 
-    # 3. Cadangan: Jika kolom gambar kosong, cari berdasarkan nama produk
-    if kategori and nama_produk:
-        prod_clean = nama_produk.strip().replace(" ", "_")
-        exts = ['.png', '.jpg', '.jpeg']
-        for ext in exts:
-            fname = f"{kat_clean}/{prod_clean}{ext}"
-            # Cek fisik file di server
-            if (STATIC_DIR / "images" / fname).exists():
-                return url_for('static', filename=f'images/{fname}')
-
-    # 4. Jika semua gagal
     return url_for('static', filename='images/default.png')
 
 def apply_filters(df, q="", brand="", prefs=None):
@@ -1219,4 +1232,5 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
