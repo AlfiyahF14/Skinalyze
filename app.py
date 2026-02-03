@@ -749,7 +749,7 @@ def page_tentang():
 
 @app.route("/rekomendasi")
 def page_rekomendasi():
-    return render_template("rekomendasi.html", items=[])
+    return render_template("rekomendasi.html")
 
 # -------------------------
 # API: Produk
@@ -1236,6 +1236,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
