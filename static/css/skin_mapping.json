@@ -1,0 +1,61 @@
+{
+    "kusam warna": [
+        "kusam", "kulit kusam", "kusam warna", "warna kulit tidak merata",
+        "tone tidak rata", "noda hitam", "bintik hitam", "flek hitam",
+        "melasma", "hiperpigmentasi", "bekas jerawat menggelap",
+        "noda bekas jerawat", "dark spot", "post acne mark", "pie",
+        "pigmentasi"
+    ],
+
+    "jerawat": [
+        "jerawat", "acne", "acne ringan", "berjerawat", "rentan berjerawat",
+        "acne prone", "komedo", "komedo hitam", "komedo putih",
+        "pori pori tersumbat", "blackhead", "whitehead", "breakout"
+    ],
+
+    "minyak pori": [
+        "minyak berlebih", "berminyak", "produksi sebum", "sebum tinggi",
+        "pori besar", "pori pori besar", "kulit berminyak", "minyak pori"
+    ],
+
+    "kering dehidrasi": [
+        "kering", "kulit kering", "kering ringan", "dehidrasi",
+        "kekurangan hidrasi", "butuh hidrasi", "kulit tight",
+        "kulit ketarik", "kulit mengelupas", "kulit dehidrasi"
+    ],
+
+    "sensitif iritasi": [
+        "sensitif", "kulit sensitif", "iritasi", "iritasi ringan",
+        "kulit kemerahan", "redness", "inflamasi", "mudah iritasi",
+        "kulit perih", "gatal ringan", "kulit merah"
+    ],
+
+    "skin barrier": [
+        "skin barrier rusak", "skin barrier lemah", "skin barrier",
+        "kulit terbakar", "ph tidak seimbang", "barrier melemah",
+        "kulit tidak sehat", "barrier rusak"
+    ],
+
+    "penuaan": [
+        "penuaan dini", "tanda penuaan", "aging", "garis halus",
+        "kerutan", "wrinkle", "elastisitas menurun", "kulit kendur",
+        "kulit kurang kencang", "kulit keriput"
+    ],
+
+    "tekstur": [
+        "tekstur kasar", "tekstur tidak rata", "permukaan kulit kasar",
+        "sel kulit mati", "kulit bertekstur", "bumpy skin",
+        "tekstur"
+    ],
+
+    "uv lingkungan": [
+        "paparan uv", "sinar uv", "radiasi uv", "uv exposure",
+        "blue light", "uv blue light", "polusi", "polusi uv",
+        "sering terpapar polusi", "radikal bebas", "aktivitas outdoor",
+        "terpapar sinar matahari", "sun exposure"
+    ],
+
+    "lainnya": [
+        "hidrasi ringan", "lainnya", "masalah umum"
+    ]
+}
