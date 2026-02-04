@@ -2,6 +2,17 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Main.js loaded");
 
     /* ================================
+       FUNCTION UTILITY
+    ================================ */
+    function potongKandungan(text, limit = 4) {
+        if (!text) return "";
+        return text
+            .split(',')
+            .map(i => i.trim())
+            .slice(0, limit)
+            .join(', ');
+        
+    /* ================================
        PRODUK & HOME PAGE
     ================================ */
     const produkGrid = document.getElementById("produkGrid");
@@ -29,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <h3>${p.nama}</h3>
                 <p><strong>Brand:</strong> ${p.brand}</p>
                 <p><strong>Kategori:</strong> ${p.kategori}</p>
-                <p><strong>Kandungan Utama:</strong> ${p.kandungan}</p>
+                <p><strong>Kandungan Utama:</strong> ${potongKandungan(p.kandungan)}</p>
                 <div class="label-box">
                     ${p.alcohol_free ? "<span>Alcohol-Free</span>" : ""}
                     ${p.fragrance_free ? "<span>Fragrance-Free</span>" : ""}
@@ -208,7 +219,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                         <p class="detail-row"><strong>Kategori:</strong> ${kategoriMap[item.kategori] || item.kategori}</p>
                                         
                                         <p class="ingredient-label"><strong>Kandungan Utama:</strong></p>
-                                        <p class="ingredient-content">${item.kandungan}</p>
+                                        <p class="ingredient-content">${potongKandungan(item.kandungan)}</p>
                                     </div>
                                     <div class="label-box flex flex-wrap gap-2 justify-start mt-3">
                                         ${item.alcohol_free ? `<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full">🚫 Alcohol-Free</span>` : ""}
@@ -332,4 +343,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
 
