@@ -555,7 +555,7 @@ def page_home():
     # Ambil parameter filter
     search = request.args.get("search")
     selected_brands = request.args.getlist("brand")
-    selected_categories = request.args.getlist("kategori")
+    selected_categories = request.args.getlist("category")
     alcohol_free = request.args.get("alcohol_free") == "true"
     fragrance_free = request.args.get("fragrance_free") == "true"
     non_comedogenic = request.args.get("non_comedogenic") == "true"
@@ -1222,6 +1222,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
