@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Main.js loaded");
 
     /* ================================
-       FUNCTION UTILITY
+       UTILITY FUNCTION
     ================================ */
     function potongKandungan(text, limit = 4) {
         if (!text) return "";
@@ -11,7 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .map(i => i.trim())
             .slice(0, limit)
             .join(', ');
-        
+    }
+
     /* ================================
        PRODUK & HOME PAGE
     ================================ */
@@ -29,12 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
         items.forEach(p => {
             const card = document.createElement("div");
             card.className = "produk-card fade-in";
-
-            const imgSrc = item.image
-                ? `/static/images/${item.kategori}/${item.image}`
-                : "/static/images/default.png";
-
-
+            const imgSrc = (p.image_url && p.image_url.trim() !== "") ? p.image_url : "/static/Images/default.jpg";
             card.innerHTML = `
                 <img src="${imgSrc}" alt="${p.nama}" class="produk-img">
                 <h3>${p.nama}</h3>
@@ -55,48 +51,24 @@ document.addEventListener("DOMContentLoaded", function () {
         if (loaderProduk) loaderProduk.style.display = "block";
         if (produkGrid) produkGrid.innerHTML = "";
 
-        /* ===============================
-        1) Ambil kategori dari URL
-        =============================== */
         const urlParams = new URLSearchParams(window.location.search);
         let kategoriURL = (urlParams.get("category") || "").trim();
+        if (kategoriURL) kategoriURL = kategoriURL.toLowerCase().replace(/\s+/g, "");
 
-        // Normalisasi "Facial Wash" → "facialwash"
-        if (kategoriURL) {
-            kategoriURL = kategoriURL.toLowerCase().replace(/\s+/g, "");
-
-        }
-
-        /* ===============================
-        2) Ambil filter input dari UI
-        =============================== */
         const q = document.getElementById("searchText")?.value.trim() || "";
-
-        // Kalau input kategori ADA → pakai
-        // Kalau TIDAK ADA → pakai kategori dari URL
         const categoryInput = document.getElementById("filterCategory")?.value || "";
         const category = categoryInput ? categoryInput : kategoriURL;
-
         const brand = document.getElementById("filterBrand")?.value || "";
-
         const alcoholFree = document.getElementById("prefAlcoholFree")?.checked || false;
         const fragranceFree = document.getElementById("prefFragranceFree")?.checked || false;
         const nonComedogenic = document.getElementById("prefNonComedogenic")?.checked || false;
 
-        /* Debug log (untuk memastikan nilai) */
-        console.log("PARAM LOADPRODUK:", { q, category, brand, kategoriURL, alcoholFree, fragranceFree, nonComedogenic });
-
-        /* ===============================
-        3) Fetch ke Backend
-        =============================== */
         fetch(`/api/produk?q=${encodeURIComponent(q)}&category=${encodeURIComponent(category)}&brand=${encodeURIComponent(brand)}&alcohol_free=${alcoholFree}&fragrance_free=${fragranceFree}&non_comedogenic=${nonComedogenic}`)
             .then(res => res.json())
             .then(data => {
                 if (loaderProduk) loaderProduk.style.display = "none";
                 let items = data.items || [];
-                if (initialLimit && items.length > initialLimit) {
-                    items = items.slice(0, initialLimit);
-                }
+                if (initialLimit && items.length > initialLimit) items = items.slice(0, initialLimit);
                 renderProduk(items);
             })
             .catch(() => {
@@ -105,26 +77,57 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    if (btnFilter) {
-        btnFilter.addEventListener("click", function () {
-            loadProduk();
-        });
-    }
+    if (btnFilter) btnFilter.addEventListener("click", () => loadProduk());
 
-    // Auto-load produk (6 untuk home, semua untuk produk.html)
     if (produkGrid) {
-        if (document.body.classList.contains("page-home")) {
-            loadProduk(6); 
-        } else if (document.body.classList.contains("page-produk")) {
-            loadProduk(); 
-        }
+        if (document.body.classList.contains("page-home")) loadProduk(6);
+        else if (document.body.classList.contains("page-produk")) loadProduk();
     }
 
     /* ================================
-        REKOMENDASI PAGE
+       HAMBURGER MENU MOBILE
     ================================ */
+    const hamburgerBtn = document.getElementById("hamburgerBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
 
-    // === Convert nama kategori ===
+    if (hamburgerBtn && mobileMenu) {
+        mobileMenu.classList.add("hidden");
+
+        hamburgerBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            mobileMenu.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!mobileMenu.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+                mobileMenu.classList.add("hidden");
+            }
+        });
+    }
+
+    /* ================================
+       FILTER SIDEBAR MOBILE
+    ================================ */
+    const btnOpenFilter = document.getElementById("btnOpenFilter");
+    const sidebar = document.querySelector(".filter-sidebar");
+    const overlay = document.getElementById("mobileFilterOverlay");
+
+    if (btnOpenFilter && sidebar && overlay) {
+        btnOpenFilter.addEventListener("click", () => {
+            if (window.innerWidth < 768) {
+                sidebar.classList.add("show");
+                overlay.classList.remove("hidden");
+            }
+        });
+        overlay.addEventListener("click", () => {
+            sidebar.classList.remove("show");
+            overlay.classList.add("hidden");
+        });
+    }
+
+    /* ================================
+       REKOMENDASI PAGE
+    ================================ */
     const kategoriMap = {
         facialwash: "Facial Wash",
         toner: "Toner",
@@ -137,27 +140,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const resultBox = document.getElementById("resultBox");
     const loaderRekom = document.getElementById("loader");
 
-    /* ================================
-        NOTE GENERATOR UNTUK PRODUK
-    ================================ */
     function generateNotes(item) {
         const notes = [];
-
-        // 1. ALCOHOL
-        if (item.alcohol_free === false) {
-            notes.push("Produk ini mengandung alcohol. Sebaiknya dihindari jika kulitmu mudah iritasi atau sangat sensitif.");
-        }
-
-        // 2. FRAGRANCE
-        if (item.fragrance_free === false) {
-            notes.push("Produk ini mengandung fragrance. Jika kulitmu sangat sensitif, lebih baik berhati-hati.");
-        }
-
-        // 3. COMEDOGENIC
-        if (item.non_comedogenic === false) {
-            notes.push("Produk ini berpotensi menyumbat pori-pori (comedogenic). Tidak disarankan untuk kulit berminyak atau acne-prone.");
-        }
-
+        if (item.alcohol_free === false) notes.push("Produk ini mengandung alcohol. Sebaiknya dihindari jika kulitmu mudah iritasi atau sangat sensitif.");
+        if (item.fragrance_free === false) notes.push("Produk ini mengandung fragrance. Jika kulitmu sangat sensitif, lebih baik berhati-hati.");
+        if (item.non_comedogenic === false) notes.push("Produk ini berpotensi menyumbat pori-pori (comedogenic). Tidak disarankan untuk kulit berminyak atau acne-prone.");
         return notes;
     }
 
@@ -187,81 +174,60 @@ document.addEventListener("DOMContentLoaded", function () {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             })
-                .then(res => res.json())
-                .then(result => {
-                    if (loaderRekom) loaderRekom.style.display = "none";
-                    if (!resultBox) return;
-                    resultBox.style.display = "block";
+            .then(res => res.json())
+            .then(result => {
+                if (loaderRekom) loaderRekom.style.display = "none";
+                if (!resultBox) return;
+                resultBox.style.display = "block";
 
-                    if (result.items && result.items.length > 0) {
-                        result.items.forEach(item => {
-                            const div = document.createElement("div");
-                            div.className = "recommend-card fade-in";
+                if (result.items && result.items.length > 0) {
+                    result.items.forEach(item => {
+                        const div = document.createElement("div");
+                        div.className = "recommend-card fade-in";
+                        const imgSrc = (item.image_url && item.image_url.trim() !== "") ? item.image_url : "/static/Images/default.jpg";
+                        const autoNotes = generateNotes(item);
 
-                            const imgSrc = (item.image_url && item.image_url.trim() !== "") 
-                                ? item.image_url 
-                                : "/static/Images/default.jpg";
+                        let notesHtml = "";
+                        if (autoNotes.length > 0) notesHtml = "<ul>" + autoNotes.map(n => `<li>${n}</li>`).join("") + "</ul>";
 
-                            // Generate notes dari JS
-                            const autoNotes = generateNotes(item);
-
-                            let notesHtml = "";
-                            if (autoNotes.length > 0) {
-                                notesHtml = "<ul>" + autoNotes.map(n => `<li>${n}</li>`).join("") + "</ul>";
-                            }
-
-                            div.innerHTML = `
-                                <div class="card-content">
-                                    <img src="${imgSrc}" alt="${item.nama}" class="produk-img">
-                                    <h3>${item.nama}</h3>
-                                    <div class="card-details">
-                                        <p class="detail-row"><strong>Brand:</strong> ${item.brand}</p>
-                                        <p class="detail-row"><strong>Kategori:</strong> ${kategoriMap[item.kategori] || item.kategori}</p>
-                                        
-                                        <p class="ingredient-label"><strong>Kandungan Utama:</strong></p>
-                                        <p class="ingredient-content">${potongKandungan(item.kandungan)}</p>
-                                    </div>
-                                    <div class="label-box flex flex-wrap gap-2 justify-start mt-3">
-                                        ${item.alcohol_free ? `<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full">🚫 Alcohol-Free</span>` : ""}
-                                        ${item.fragrance_free ? `<span class="px-2 py-1 bg-pink-100 text-pink-600 rounded-full">🌸 Fragrance-Free</span>` : ""}
-                                        ${item.non_comedogenic ? `<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full">✅ Non-Comedogenic</span>` : ""}
-                                    </div>
+                        div.innerHTML = `
+                            <div class="card-content">
+                                <img src="${imgSrc}" alt="${item.nama}" class="produk-img">
+                                <h3>${item.nama}</h3>
+                                <div class="card-details">
+                                    <p class="detail-row"><strong>Brand:</strong> ${item.brand}</p>
+                                    <p class="detail-row"><strong>Kategori:</strong> ${kategoriMap[item.kategori] || item.kategori}</p>
+                                    <p class="ingredient-label"><strong>Kandungan Utama:</strong></p>
+                                    <p class="ingredient-content">${potongKandungan(item.kandungan)}</p>
                                 </div>
-
-                                ${
-                                    autoNotes.length > 0
-                                    ? `
-                                        <div class="note-alert mt-3">
-                                            <span class="note-icon">⚠️</span>
-                                            <div><strong>Peringatan:</strong><br>${autoNotes.join("<br>")}</div>
-                                        </div>
-                                    `
-                                    : ""
-                                }
-                            `;
-                            resultBox.appendChild(div);
-                        });
-                    } else {
-                        resultBox.innerHTML = "<p class='fade-in'>Tidak ada rekomendasi ditemukan.</p>";
-                    }
-                })
-                .catch(() => {
-                    if (loaderRekom) loaderRekom.style.display = "none";
-                    if (resultBox) {
-                        resultBox.style.display = "block";
-                        resultBox.innerHTML = "<p class='fade-in'>Error memuat rekomendasi.</p>";
-                    }
-                });
+                                <div class="label-box flex flex-wrap gap-2 justify-start mt-3">
+                                    ${item.alcohol_free ? `<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full">🚫 Alcohol-Free</span>` : ""}
+                                    ${item.fragrance_free ? `<span class="px-2 py-1 bg-pink-100 text-pink-600 rounded-full">🌸 Fragrance-Free</span>` : ""}
+                                    ${item.non_comedogenic ? `<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full">✅ Non-Comedogenic</span>` : ""}
+                                </div>
+                            </div>
+                            ${autoNotes.length > 0 ? `<div class="note-alert mt-3"><span class="note-icon">⚠️</span><div><strong>Peringatan:</strong><br>${autoNotes.join("<br>")}</div></div>` : ""}
+                        `;
+                        resultBox.appendChild(div);
+                    });
+                } else {
+                    resultBox.innerHTML = "<p class='fade-in'>Tidak ada rekomendasi ditemukan.</p>";
+                }
+            })
+            .catch(() => {
+                if (loaderRekom) loaderRekom.style.display = "none";
+                if (resultBox) {
+                    resultBox.style.display = "block";
+                    resultBox.innerHTML = "<p class='fade-in'>Error memuat rekomendasi.</p>";
+                }
+            });
         });
     }
 
-
     /* ================================
-    CHATBOT PAGE (Skinalyze)
+       CHATBOT PAGE
     ================================ */
-
-    localStorage.removeItem("chat_session_id");  // RESET SESSION SETIAP REFRESH
-
+    localStorage.removeItem("chat_session_id");
     let sessionId = crypto.randomUUID();
     localStorage.setItem("chat_session_id", sessionId);
 
@@ -295,20 +261,15 @@ document.addEventListener("DOMContentLoaded", function () {
     async function sendChat(userText) {
         appendMessage(userText, "user");
         chatbotInput.value = "";
-
         const typingBubble = showTyping();
 
         const res = await fetch("/api/chatbot", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                session_id: sessionId,
-                message: userText
-            })
+            body: JSON.stringify({ session_id: sessionId, message: userText })
         });
 
         const data = await res.json();
-
         typingBubble.remove();
         appendMessage(data.reply || "Maaf, saya belum menemukan jawabannya.", "bot");
     }
@@ -329,53 +290,3 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    /* ================================
-       HAMBURGER MENU MOBILE
-    ================================ */
-    const hamburgerBtn = document.getElementById("hamburgerBtn");
-    const mobileMenu = document.getElementById("mobileMenu");
-
-    if (hamburgerBtn && mobileMenu) {
-        mobileMenu.classList.add("hidden");
-        hamburgerBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            mobileMenu.classList.toggle("hidden");
-        });
-        // Close menu kalau klik di luar
-        document.addEventListener("click", (e) => {
-            if (!mobileMenu.contains(e.target) && !hamburgerBtn.contains(e.target)) {
-                mobileMenu.classList.add("hidden");
-            }
-        });
-    }
-
-    /* ================================
-       FILTER SIDEBAR MOBILE
-    ================================ */
-    const btnOpenFilter = document.getElementById("btnOpenFilter");
-    const sidebar = document.querySelector(".filter-sidebar");
-    const overlay = document.getElementById("mobileFilterOverlay");
-
-    if (btnOpenFilter && sidebar && overlay) {
-        btnOpenFilter.addEventListener("click", () => {
-            if (window.innerWidth < 768) {
-                sidebar.classList.add("show");
-                overlay.classList.remove("hidden");
-            }
-        });
-        overlay.addEventListener("click", () => {
-            sidebar.classList.remove("show");
-            overlay.classList.add("hidden");
-        });
-    }
-
-}); 
-
-
-
-
-
-
