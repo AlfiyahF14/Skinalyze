@@ -1309,6 +1309,11 @@ footer .border-t p {
   .filter-sidebar.show {
     transform: translateX(0);
   }
+   
+   .filter-sidebar .btn-reset {
+    font-size: 12px; 
+    padding: 6px 12px; 
+  }
 
 
   /* ================= GRID PRODUK ================= */
@@ -2093,6 +2098,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
