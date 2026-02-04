@@ -334,40 +334,39 @@ document.addEventListener("DOMContentLoaded", function () {
    HAMBURGER NAVBAR (MOBILE ONLY)
 ================================ */
 document.addEventListener("DOMContentLoaded", () => {
-    // Hamburger navbar
-    const hamburgerBtn = document.getElementById("hamburgerBtn");
-    const mobileMenu = document.getElementById("mobileMenu");
+  const hamburgerBtn = document.getElementById("hamburgerBtn");
+  const mobileMenu = document.getElementById("mobileMenu");
+  const btnOpenFilter = document.getElementById("btnOpenFilter");
+  const sidebar = document.querySelector(".filter-sidebar");
+  const overlay = document.getElementById("mobileFilterOverlay");
 
-    // Mobile filter
-    const btnOpenFilter = document.getElementById("btnOpenFilter");
-    const sidebar = document.querySelector(".filter-sidebar");
-    const overlay = document.getElementById("mobileFilterOverlay");
+  if (hamburgerBtn && mobileMenu) {
+    hamburgerBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); // mencegah bubbling overlay
+      mobileMenu.classList.toggle("hidden");
+      mobileMenu.classList.toggle("block");
+    });
+  }
 
-    // Hamburger toggle
-    if (hamburgerBtn && mobileMenu) {
-        hamburgerBtn.addEventListener("click", () => {
-            mobileMenu.classList.toggle("hidden");
-        });
-    }
+  if (btnOpenFilter && sidebar && overlay) {
+    btnOpenFilter.addEventListener("click", () => {
+      if (window.innerWidth < 768) {
+        sidebar.classList.add("show");
+        sidebar.classList.remove("hidden");
+        overlay.classList.remove("hidden");
+      }
+    });
 
-    // Open mobile filter
-    if (btnOpenFilter && sidebar && overlay) {
-        btnOpenFilter.addEventListener("click", () => {
-            if (window.innerWidth < 768) {
-                sidebar.classList.remove("hidden");
-                sidebar.classList.add("show");
-                overlay.classList.remove("hidden");
-            }
-        });
-
-        // Close overlay
-        overlay.addEventListener("click", () => {
-            sidebar.classList.remove("show");
-            sidebar.classList.add("hidden");
-            overlay.classList.add("hidden");
-        });
-    }
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("show");
+      sidebar.classList.add("hidden");
+      overlay.classList.add("hidden");
+    });
+  }
 });
+
+
+
 
 
 
