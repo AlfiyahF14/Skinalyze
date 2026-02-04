@@ -1360,10 +1360,15 @@ footer .border-t p {
     font-size: 10.5px;
     line-height: 1.2;
     margin-bottom: 2px;
+
     min-height: 2.8em;
+    max-height: 2.8em;
+
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+
+    line-clamp: 2; 
     overflow: hidden;
   }
 
@@ -2088,6 +2093,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
