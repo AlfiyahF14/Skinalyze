@@ -6,13 +6,11 @@ document.addEventListener("DOMContentLoaded", function () {
     ================================ */
     function potongKandungan(text, limit = 4) {
         if (!text) return "";
-        return text
-            .split(',')
-            .map(i => i.trim())
-            .slice(0, limit)
-            .join(', ');
+        const arr = text.split(',').map(i => i.trim());
+        if (arr.length <= limit) return arr.join(', ');
+        return arr.slice(0, limit).join(', ') + ', …';
     }
-
+    
     /* ================================
        PRODUK & HOME PAGE
     ================================ */
@@ -290,3 +288,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
