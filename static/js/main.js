@@ -330,40 +330,49 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-/* ================================
-   HAMBURGER NAVBAR (MOBILE ONLY)
-================================ */
-document.addEventListener("DOMContentLoaded", () => {
-  const hamburgerBtn = document.getElementById("hamburgerBtn");
-  const mobileMenu = document.getElementById("mobileMenu");
-  const btnOpenFilter = document.getElementById("btnOpenFilter");
-  const sidebar = document.querySelector(".filter-sidebar");
-  const overlay = document.getElementById("mobileFilterOverlay");
+document.addEventListener("DOMContentLoaded", function () {
 
-  if (hamburgerBtn && mobileMenu) {
-    hamburgerBtn.addEventListener("click", (e) => {
-      e.stopPropagation(); // mencegah bubbling overlay
-      mobileMenu.classList.toggle("hidden");
-      mobileMenu.classList.toggle("block");
-    });
-  }
+    /* ================================
+       HAMBURGER MENU MOBILE
+    ================================ */
+    const hamburgerBtn = document.getElementById("hamburgerBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
 
-  if (btnOpenFilter && sidebar && overlay) {
-    btnOpenFilter.addEventListener("click", () => {
-      if (window.innerWidth < 768) {
-        sidebar.classList.add("show");
-        sidebar.classList.remove("hidden");
-        overlay.classList.remove("hidden");
-      }
-    });
+    if (hamburgerBtn && mobileMenu) {
+        mobileMenu.classList.add("hidden");
+        hamburgerBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            mobileMenu.classList.toggle("hidden");
+        });
+        // Close menu kalau klik di luar
+        document.addEventListener("click", (e) => {
+            if (!mobileMenu.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+                mobileMenu.classList.add("hidden");
+            }
+        });
+    }
 
-    overlay.addEventListener("click", () => {
-      sidebar.classList.remove("show");
-      sidebar.classList.add("hidden");
-      overlay.classList.add("hidden");
-    });
-  }
-});
+    /* ================================
+       FILTER SIDEBAR MOBILE
+    ================================ */
+    const btnOpenFilter = document.getElementById("btnOpenFilter");
+    const sidebar = document.querySelector(".filter-sidebar");
+    const overlay = document.getElementById("mobileFilterOverlay");
+
+    if (btnOpenFilter && sidebar && overlay) {
+        btnOpenFilter.addEventListener("click", () => {
+            if (window.innerWidth < 768) {
+                sidebar.classList.add("show");
+                overlay.classList.remove("hidden");
+            }
+        });
+        overlay.addEventListener("click", () => {
+            sidebar.classList.remove("show");
+            overlay.classList.add("hidden");
+        });
+    }
+
+}); 
 
 
 
