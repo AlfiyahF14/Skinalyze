@@ -223,6 +223,17 @@
 </section>
 
 <script>
+document.querySelectorAll(".filter-category:checked").forEach(cb => {
+    let val = cb.value.toLowerCase(); // dari checkbox
+    // normalisasi sesuai backend
+    if (val === "facialwash") val = "Facial Wash";
+    else if (val === "toner") val = "Toner";
+    else if (val === "serum") val = "Serum";
+    else if (val === "moisturizer") val = "Moisturizer";
+    else if (val === "sunscreen") val = "Sunscreen";
+    url += "category=" + encodeURIComponent(val) + "&";
+});
+
 document.getElementById("btnFilter").addEventListener("click", function() {
     let url = "/produk?";
 
@@ -290,6 +301,7 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
 </script>
 
 {% endblock %}
+
 
 
 
