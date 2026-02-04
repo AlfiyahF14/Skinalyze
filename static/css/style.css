@@ -1355,7 +1355,10 @@ footer .border-t p {
   .produk-page .produk-card p {
     font-size: 10.5px;
     line-height: 1.4;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+
+    min-height: 2.8em;
+    max-height: 2.8em;
 
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -1440,7 +1443,6 @@ footer .border-t p {
   to {
     opacity: 1;
   }
-}
 }
 
 /* =======================
@@ -2076,6 +2078,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
