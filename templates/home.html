@@ -94,7 +94,7 @@
         <div class="mb-6">
           <h4 class="font-semibold mb-2">Kategori</h4>
           <div class="flex flex-col space-y-2 text-sm">
-            <label><input type="checkbox" name="kategori" value="facialwash" class="filter-category mr-2"> Facial Wash</label>
+            <label><input type="checkbox" name="category" value="facialwash" class="filter-category mr-2"> Facial Wash</label>
             <label><input type="checkbox" name="category" value="toner" class="filter-category mr-2"> Toner</label>
             <label><input type="checkbox" name="category" value="serum" class="filter-category mr-2"> Serum</label>
             <label><input type="checkbox" name="category" value="moisturizer" class="filter-category mr-2"> Moisturizer</label>
@@ -230,20 +230,14 @@ document.getElementById("btnFilter").addEventListener("click", function() {
     const search = document.getElementById("searchText").value.trim();
     if (search) url += "search=" + encodeURIComponent(search) + "&";
 
-    // Brand (bisa multiple)
+    // Brand (multiple)
     document.querySelectorAll(".filter-brand:checked").forEach(cb => {
         url += "brand=" + encodeURIComponent(cb.value) + "&";
     });
 
-    // Category (bisa multiple) → ubah sesuai format backend
+    // Category (multiple, kirim sesuai value checkbox)
     document.querySelectorAll(".filter-category:checked").forEach(cb => {
-        let val = cb.value;
-        if (val === "facialwash") val = "Facial Wash";
-        else if (val === "moisturizer") val = "Moisturizer";
-        else if (val === "serum") val = "Serum";
-        else if (val === "toner") val = "Toner";
-        else if (val === "sunscreen") val = "Sunscreen";
-        url += "kategori=" + encodeURIComponent(val) + "&";
+        url += "category=" + encodeURIComponent(cb.value) + "&";
     });
 
     // Kriteria khusus
@@ -251,32 +245,24 @@ document.getElementById("btnFilter").addEventListener("click", function() {
     if (document.getElementById("filterFragranceFree").checked) url += "fragrance_free=true&";
     if (document.getElementById("filterNonComedogenic").checked) url += "non_comedogenic=true&";
 
-    // Hapus & terakhir, redirect
-    url = url.replace(/&$/, ""); // hapus & terakhir
+    // Hapus & terakhir
+    url = url.replace(/&$/, "");
     window.location.href = url;
 });
 
-// Isi checkbox sesuai URL saat home page dibuka
+// Saat home page dibuka, centang checkbox sesuai URL
 const params = new URLSearchParams(window.location.search);
 
 // Brand
 document.querySelectorAll(".filter-brand").forEach(cb => {
-    if (params.getAll("brand").map(b => b.toLowerCase()).includes(cb.value.toLowerCase())) {
+    if (params.getAll("brand").includes(cb.value)) {
         cb.checked = true;
     }
 });
 
 // Category
 document.querySelectorAll(".filter-category").forEach(cb => {
-    let val = cb.value;
-    // normalisasi supaya sesuai URL param
-    if (val === "facialwash") val = "facial wash";
-    else if (val === "moisturizer") val = "moisturizer";
-    else if (val === "serum") val = "serum";
-    else if (val === "toner") val = "toner";
-    else if (val === "sunscreen") val = "sunscreen";
-
-    if (params.getAll("category").map(c => c.toLowerCase()).includes(val.toLowerCase())) {
+    if (params.getAll("category").includes(cb.value)) {
         cb.checked = true;
     }
 });
@@ -304,6 +290,7 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
 </script>
 
 {% endblock %}
+
 
 
 
