@@ -1333,13 +1333,17 @@ footer .border-t p {
     height: 100%;
   }
 
+  .produk-page .produk-card span {
+    margin-bottom: 4px;
+    display: inline-block;
+  }
+
   .produk-page .produk-card img {
     width: 100%;
     aspect-ratio: 3 / 4;
     object-fit: contain;
     margin-bottom: 8px;
   }
-
 
   .produk-page .produk-card h3 {
     font-size: 12.5px;
@@ -1355,7 +1359,7 @@ footer .border-t p {
   }
 
   .produk-page .produk-card button {
-    margin-top: auto;
+    margin-top: 10 px;
     font-size: 10.5px;
     padding: 5px 8px;
     border-radius: 8px;
@@ -2051,6 +2055,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
