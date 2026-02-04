@@ -94,7 +94,7 @@
         <div class="mb-6">
           <h4 class="font-semibold mb-2">Kategori</h4>
           <div class="flex flex-col space-y-2 text-sm">
-            <label><input type="checkbox" name="category" value="facialwash" class="filter-category mr-2"> Facial Wash</label>
+            <label><input type="checkbox" name="kategori" value="facialwash" class="filter-category mr-2"> Facial Wash</label>
             <label><input type="checkbox" name="category" value="toner" class="filter-category mr-2"> Toner</label>
             <label><input type="checkbox" name="category" value="serum" class="filter-category mr-2"> Serum</label>
             <label><input type="checkbox" name="category" value="moisturizer" class="filter-category mr-2"> Moisturizer</label>
@@ -243,7 +243,7 @@ document.getElementById("btnFilter").addEventListener("click", function() {
         else if (val === "serum") val = "Serum";
         else if (val === "toner") val = "Toner";
         else if (val === "sunscreen") val = "Sunscreen";
-        url += "category=" + encodeURIComponent(val) + "&";
+        url += "kategori=" + encodeURIComponent(val) + "&";
     });
 
     // Kriteria khusus
@@ -304,6 +304,7 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
 </script>
 
 {% endblock %}
+
 
 
 
