@@ -2,6 +2,25 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Main.js loaded");
 
     /* ================================
+       POTONG KANDUNGAN UNTUK GRID PRODUK
+    ================================ */
+    document.addEventListener("DOMContentLoaded", function () {
+        // Ambil semua card di home / produk page
+        document.querySelectorAll("#produkGridProduk .produk-card").forEach(card => {
+            const kandunganEl = card.querySelector("p.ingredient-content, p.kandungan");
+            if (!kandunganEl) return;
+    
+            const fullText = kandunganEl.innerText.trim();
+            const words = fullText.split(/\s+/);
+    
+            if (words.length > 4) {
+                const shortText = words.slice(0, 4).join(" ") + " dll";
+                kandunganEl.innerText = shortText;
+            }
+        });
+    });
+
+    /* ================================
        PRODUK & HOME PAGE
     ================================ */
     const produkGrid = document.getElementById("produkGrid");
@@ -332,3 +351,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
