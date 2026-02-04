@@ -223,48 +223,58 @@
 </section>
 
 <script>
+// Filter & pindah ke halaman produk
 document.getElementById("btnFilter").addEventListener("click", function() {
     let url = "/produk?";
-    let search = document.getElementById("searchText").value;
+
+    // Search
+    const search = document.getElementById("searchText").value.trim();
     if (search) url += "search=" + encodeURIComponent(search) + "&";
 
+    // Brand (bisa multiple)
     document.querySelectorAll(".filter-brand:checked").forEach(cb => {
         url += "brand=" + encodeURIComponent(cb.value) + "&";
     });
 
+    // Category (bisa multiple)
     document.querySelectorAll(".filter-category:checked").forEach(cb => {
         url += "category=" + encodeURIComponent(cb.value) + "&";
     });
 
+    // Kriteria khusus
     if (document.getElementById("filterAlcoholFree").checked) url += "alcohol_free=true&";
     if (document.getElementById("filterFragranceFree").checked) url += "fragrance_free=true&";
     if (document.getElementById("filterNonComedogenic").checked) url += "non_comedogenic=true&";
 
+    // Hapus & terakhir, redirect
+    url = url.replace(/&$/, ""); // hapus & terakhir
     window.location.href = url;
 });
-</script>
 
-<script>
-  const params = new URLSearchParams(window.location.search);
+// Isi checkbox sesuai URL saat home page dibuka
+const params = new URLSearchParams(window.location.search);
 
-  document.querySelectorAll("input[name='brand']").forEach(cb => {
-    if (params.getAll("brand").map(b => b.toUpperCase()).includes(cb.value.toUpperCase())) {
-      cb.checked = true;
+// Brand
+document.querySelectorAll(".filter-brand").forEach(cb => {
+    if (params.getAll("brand").map(b => b.toLowerCase()).includes(cb.value.toLowerCase())) {
+        cb.checked = true;
     }
-  });
+});
 
-  document.querySelectorAll("input[name='category']").forEach(cb => {
-    // Sesuaikan pengecekan dengan 'category'
+// Category
+document.querySelectorAll(".filter-category").forEach(cb => {
     if (params.getAll("category").map(c => c.toLowerCase()).includes(cb.value.toLowerCase())) {
-      cb.checked = true;
+        cb.checked = true;
     }
-  });
+});
 
-  if (params.get("alcohol_free") === "true") document.getElementById("filterAlcoholFree").checked = true;
-  if (params.get("fragrance_free") === "true") document.getElementById("filterFragranceFree").checked = true;
-  if (params.get("non_comedogenic") === "true") document.getElementById("filterNonComedogenic").checked = true;
+// Kriteria khusus
+if (params.get("alcohol_free") === "true") document.getElementById("filterAlcoholFree").checked = true;
+if (params.get("fragrance_free") === "true") document.getElementById("filterFragranceFree").checked = true;
+if (params.get("non_comedogenic") === "true") document.getElementById("filterNonComedogenic").checked = true;
 
-  document.getElementById("searchText").value = params.get("search") || "";
+// Search
+document.getElementById("searchText").value = params.get("search") || "";
 </script>
 
 <script>
@@ -281,6 +291,7 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
 </script>
 
 {% endblock %}
+
 
 
 
