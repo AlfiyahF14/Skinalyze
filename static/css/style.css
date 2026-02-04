@@ -1335,7 +1335,7 @@ footer .border-t p {
   }
 
   .produk-page .produk-card span {
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     display: inline-block;
   }
 
@@ -1356,13 +1356,13 @@ footer .border-t p {
   .produk-page .produk-card p {
     font-size: 10.5px;
     line-height: 1.4;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
 
-    line-clamp: 3; 
+    line-clamp: 2; 
     overflow: hidden;
   }
 
@@ -2070,6 +2070,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
