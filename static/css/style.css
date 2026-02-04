@@ -1339,16 +1339,15 @@ footer .border-t p {
   }
 
   .produk-page .produk-card span {
-    margin-bottom: 2px;
+    margin-bottom: 1.5px;
     display: inline-block;
   }
 
   .produk-page .produk-card img {
     width: 100%;
-    aspect-ratio: 3 / 4;
     object-fit: cover;
     margin-bottom: 8px;
-    min-height: 120px;
+    height: 120px;
   }
 
   .produk-page .produk-card h3 {
@@ -2085,6 +2084,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
