@@ -45,42 +45,87 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function loadProduk(initialLimit = null) {
-        if (loaderProduk) loaderProduk.style.display = "block";
-        if (produkGrid) produkGrid.innerHTML = "";
+    function loadProduk(initialLimit = 6) {
+    if (!document.getElementById("produkGridHome")) return;
+    const produkGrid = document.getElementById("produkGridHome");
+    produkGrid.innerHTML = "<p class='fade-in'>Memuat produk...</p>";
 
-        const urlParams = new URLSearchParams(window.location.search);
-        let kategoriURL = (urlParams.get("category") || "").trim();
-        if (kategoriURL) kategoriURL = kategoriURL.toLowerCase().replace(/\s+/g, "");
+    const searchText = document.getElementById("searchText")?.value.trim() || "";
 
-        const q = document.getElementById("searchText")?.value.trim() || "";
-        const categoryInput = document.getElementById("filterCategory")?.value || "";
-        const category = categoryInput ? categoryInput : kategoriURL;
-        const brand = document.getElementById("filterBrand")?.value || "";
-        const alcoholFree = document.getElementById("prefAlcoholFree")?.checked || false;
-        const fragranceFree = document.getElementById("prefFragranceFree")?.checked || false;
-        const nonComedogenic = document.getElementById("prefNonComedogenic")?.checked || false;
+    // Ambil brand dan category yang dicentang
+    const brand = Array.from(document.querySelectorAll(".filter-brand:checked")).map(cb => cb.value);
+    const category = Array.from(document.querySelectorAll(".filter-category:checked")).map(cb => cb.value);
 
-        fetch(`/api/produk?q=${encodeURIComponent(q)}&category=${encodeURIComponent(category)}&brand=${encodeURIComponent(brand)}&alcohol_free=${alcoholFree}&fragrance_free=${fragranceFree}&non_comedogenic=${nonComedogenic}`)
-            .then(res => res.json())
-            .then(data => {
-                if (loaderProduk) loaderProduk.style.display = "none";
-                let items = data.items || [];
-                if (initialLimit && items.length > initialLimit) items = items.slice(0, initialLimit);
-                renderProduk(items);
-            })
-            .catch(() => {
-                if (loaderProduk) loaderProduk.style.display = "none";
-                if (produkGrid) produkGrid.innerHTML = "<p class='fade-in'>Error memuat produk.</p>";
+    // Filter khusus
+    const alcoholFree = document.getElementById("filterAlcoholFree")?.checked || false;
+    const fragranceFree = document.getElementById("filterFragranceFree")?.checked || false;
+    const nonComedogenic = document.getElementById("filterNonComedogenic")?.checked || false;
+
+    // Build query params
+    const params = new URLSearchParams();
+    if (searchText) params.append("q", searchText);
+    brand.forEach(b => params.append("brand", b));
+    category.forEach(c => params.append("category", c));
+    if (alcoholFree) params.append("alcohol_free", "true");
+    if (fragranceFree) params.append("fragrance_free", "true");
+    if (nonComedogenic) params.append("non_comedogenic", "true");
+
+    fetch("/api/produk?" + params.toString())
+        .then(res => res.json())
+        .then(data => {
+            let items = data.items || [];
+            if (initialLimit) items = items.slice(0, initialLimit);
+
+            if (items.length === 0) {
+                produkGrid.innerHTML = "<p class='fade-in'>Tidak ada produk ditemukan.</p>";
+                return;
+            }
+
+            produkGrid.innerHTML = "";
+            items.forEach(p => {
+                const card = document.createElement("div");
+                card.className = "produk-card bg-white p-4 rounded-lg shadow hover:shadow-lg transition";
+                const imgSrc = (p.image_url && p.image_url.trim() !== "") ? p.image_url : "/static/images/default.jpg";
+
+                // Potong kandungan maksimal 4
+                const kandunganText = potongKandungan(p.kandungan, 4);
+
+                card.innerHTML = `
+                    <center>
+                        <img src="${imgSrc}" alt="${p.nama}" class="w-full h-48 object-cover rounded-lg mb-3">
+                    </center>
+                    <h3 class="font-bold text-lg">${p.nama}</h3>
+                    <p class="text-sm text-gray-600">${p.brand} | ${p.kategori.replace('facialwash','Facial Wash').replace('moisturizer','Moisturizer').replace('serum','Serum').replace('toner','Toner').replace('sunscreen','Sunscreen')}</p>
+                    <p class="text-sm text-gray-500 mt-2">${kandunganText}</p>
+                    <div class="mt-2 flex flex-wrap gap-2 text-sm">
+                        ${p.alcohol_free ? '<span class="px-2 py-1 bg-blue-100 text-blue-600 rounded-full">🚫 Alcohol-Free</span>' : ''}
+                        ${p.fragrance_free ? '<span class="px-2 py-1 bg-pink-100 text-pink-600 rounded-full">🌸 Fragrance-Free</span>' : ''}
+                        ${p.non_comedogenic ? '<span class="px-2 py-1 bg-green-100 text-green-600 rounded-full">✅ Non-Comedogenic</span>' : ''}
+                    </div>
+                    <button class="btn-manfaat mt-3 w-full text-xs bg-pink-100 text-pink-600 py-2 rounded-lg hover:bg-pink-200 transition"
+                        data-manfaat="${p.manfaat}">
+                        Lihat Deskripsi
+                    </button>
+                `;
+                produkGrid.appendChild(card);
             });
-    }
 
-    if (btnFilter) btnFilter.addEventListener("click", () => loadProduk());
+            // Event lihat deskripsi
+            produkGrid.querySelectorAll(".btn-manfaat").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    const modal = document.getElementById("manfaatModal");
+                    document.getElementById("manfaatContent").innerText = this.dataset.manfaat;
+                    modal.classList.remove("hidden");
+                });
+            });
+        })
+        .catch(() => {
+            produkGrid.innerHTML = "<p class='fade-in'>Error memuat produk.</p>";
+        });
+}
 
-    if (produkGrid) {
-        if (document.body.classList.contains("page-home")) loadProduk(6);
-        else if (document.body.classList.contains("page-produk")) loadProduk();
-    }
+// Pasang ke tombol filter
+document.getElementById("btnFilter")?.addEventListener("click", () => loadProduk());
 
     /* ================================
        HAMBURGER MENU MOBILE
@@ -288,5 +333,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
 
 
