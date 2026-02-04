@@ -223,7 +223,6 @@
 </section>
 
 <script>
-// Filter & pindah ke halaman produk
 document.getElementById("btnFilter").addEventListener("click", function() {
     let url = "/produk?";
 
@@ -236,9 +235,15 @@ document.getElementById("btnFilter").addEventListener("click", function() {
         url += "brand=" + encodeURIComponent(cb.value) + "&";
     });
 
-    // Category (bisa multiple)
+    // Category (bisa multiple) → ubah sesuai format backend
     document.querySelectorAll(".filter-category:checked").forEach(cb => {
-        url += "category=" + encodeURIComponent(cb.value) + "&";
+        let val = cb.value;
+        if (val === "facialwash") val = "Facial Wash";
+        else if (val === "moisturizer") val = "Moisturizer";
+        else if (val === "serum") val = "Serum";
+        else if (val === "toner") val = "Toner";
+        else if (val === "sunscreen") val = "Sunscreen";
+        url += "category=" + encodeURIComponent(val) + "&";
     });
 
     // Kriteria khusus
@@ -263,7 +268,15 @@ document.querySelectorAll(".filter-brand").forEach(cb => {
 
 // Category
 document.querySelectorAll(".filter-category").forEach(cb => {
-    if (params.getAll("category").map(c => c.toLowerCase()).includes(cb.value.toLowerCase())) {
+    let val = cb.value;
+    // normalisasi supaya sesuai URL param
+    if (val === "facialwash") val = "facial wash";
+    else if (val === "moisturizer") val = "moisturizer";
+    else if (val === "serum") val = "serum";
+    else if (val === "toner") val = "toner";
+    else if (val === "sunscreen") val = "sunscreen";
+
+    if (params.getAll("category").map(c => c.toLowerCase()).includes(val.toLowerCase())) {
         cb.checked = true;
     }
 });
@@ -291,6 +304,7 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
 </script>
 
 {% endblock %}
+
 
 
 
