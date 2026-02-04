@@ -94,11 +94,11 @@
         <div class="mb-6">
           <h4 class="font-semibold mb-2">Kategori</h4>
           <div class="flex flex-col space-y-2 text-sm">
-            <label><input type="checkbox" name="category" value="facialwash" class="filter-category mr-2"> Facial Wash</label>
-            <label><input type="checkbox" name="category" value="toner" class="filter-category mr-2"> Toner</label>
-            <label><input type="checkbox" name="category" value="serum" class="filter-category mr-2"> Serum</label>
-            <label><input type="checkbox" name="category" value="moisturizer" class="filter-category mr-2"> Moisturizer</label>
-            <label><input type="checkbox" name="category" value="sunscreen" class="filter-category mr-2"> Sunscreen</label>
+            <label><input type="checkbox" name="kategori" value="facialwash" class="filter-category mr-2"> Facial Wash</label>
+            <label><input type="checkbox" name="kategori" value="toner" class="filter-category mr-2"> Toner</label>
+            <label><input type="checkbox" name="kategori" value="serum" class="filter-category mr-2"> Serum</label>
+            <label><input type="checkbox" name="kategori" value="moisturizer" class="filter-category mr-2"> Moisturizer</label>
+            <label><input type="checkbox" name="kategori" value="sunscreen" class="filter-category mr-2"> Sunscreen</label>
           </div>
         </div>
 
@@ -237,7 +237,7 @@ document.getElementById("btnFilter").addEventListener("click", function() {
 
     // Category (multiple, kirim sesuai value checkbox)
     document.querySelectorAll(".filter-category:checked").forEach(cb => {
-        url += "category=" + encodeURIComponent(cb.value) + "&";
+        url += "kategori=" + encodeURIComponent(cb.value) + "&";
     });
 
     // Kriteria khusus
@@ -290,6 +290,7 @@ document.getElementById("closeManfaat").addEventListener("click", () => {
 </script>
 
 {% endblock %}
+
 
 
 
