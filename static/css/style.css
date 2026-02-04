@@ -1344,7 +1344,7 @@ footer .border-t p {
   }
 
   .produk-page .produk-card img {
-    width: 100%;
+    max-width: 100px;
     object-fit: cover;
     margin-bottom: 8px;
     height: 120px;
@@ -1394,6 +1394,15 @@ footer .border-t p {
       line-clamp: 1;
     }
   }
+   @media (max-width: 414px) {
+     .produk-page .produk-card img {
+         aspect-ratio: 3 / 4;
+         object-fit: cover;
+         width: 90%;   /* agak mengecilkan */
+         margin: 0 auto 8px;
+         min-height: 100px; /* lebih kecil supaya tidak terlalu tinggi */
+     }
+   }
 
 
   /* ================= LABEL / BADGE ================= */
@@ -2084,6 +2093,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
