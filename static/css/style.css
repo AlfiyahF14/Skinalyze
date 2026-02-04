@@ -1328,13 +1328,18 @@ footer .border-t p {
     padding: 10px;
     border-radius: 12px;
     background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   .produk-page .produk-card img {
-    height: 110px;
+    width: 100%;
+    aspect-ratio: 3 / 4;
     object-fit: contain;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
+
 
   .produk-page .produk-card h3 {
     font-size: 12.5px;
@@ -1345,6 +1350,12 @@ footer .border-t p {
   .produk-page .produk-card p {
     font-size: 10.5px;
     line-height: 1.4;
+    max-height: 3.8em;
+    overflow: hidden;
+  }
+
+  .produk-page .produk-card button {
+     margin-top: auto;
   }
 
   /* ================= LABEL / BADGE ================= */
@@ -2035,4 +2046,5 @@ footer .border-t p {
   }
 
 }
+
 
