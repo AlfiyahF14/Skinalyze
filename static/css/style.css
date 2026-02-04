@@ -1355,7 +1355,12 @@ footer .border-t p {
   }
 
   .produk-page .produk-card button {
-     margin-top: auto;
+    margin-top: auto;
+    font-size: 10.5px;
+    padding: 5px 8px;
+    border-radius: 8px;
+    height: auto;
+    line-height: 1.2;
   }
 
   /* ================= LABEL / BADGE ================= */
@@ -2046,5 +2051,6 @@ footer .border-t p {
   }
 
 }
+
 
 
