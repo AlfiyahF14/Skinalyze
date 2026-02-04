@@ -1345,7 +1345,7 @@ footer .border-t p {
 
   .produk-page .produk-card img {
     width: 100%;
-    aspect-ratio: 1 / 1.2;
+    aspect-ratio: 3 / 4;
     object-fit: cover;
     margin-bottom: 8px;
     min-height: 120px;
@@ -2085,6 +2085,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
