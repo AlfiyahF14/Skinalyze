@@ -793,7 +793,7 @@ footer .border-t p {
 @media (max-width: 768px) {
   #masalahTrigger span {
     font-size: 14px; /* lebih kecil di mobile */
-  }
+}
 
 /* -----------------------
   ALERT 
@@ -2104,6 +2104,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
