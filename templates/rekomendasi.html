@@ -90,26 +90,25 @@
 
 
 <!-- Masalah Kulit -->
-<div class="relative w-full max-w-sm mx-auto">
-  <!-- Label -->
-  <label for="masalahTrigger" class="block text-sm md:text-base font-medium mb-1">Masalah Kulit</label>
+<div class="relative">
+  <label class="block font-medium mb-2">Masalah Kulit</label>
 
   <!-- Trigger -->
-  <div id="masalahTrigger"
-       class="w-full border px-3 md:px-4 py-1.5 md:py-2 rounded-lg bg-white cursor-pointer flex items-center justify-between">
-    <span class="text-sm md:text-base">Pilih Masalah Kulit</span>
+<div id="masalahTrigger"
+     class="w-full border px-4 py-2 rounded-lg bg-white cursor-pointer flex items-center justify-between">
+  <span class="text-sm md:text-base">Pilih Masalah Kulit</span> 
+
     <!-- Icon Panah -->
     <svg id="arrowIcon"
-         class="w-4 h-4 text-gray-500 transition-transform duration-200"
-         xmlns="http://www.w3.org/2000/svg"
-         fill="none"
-         viewBox="0 0 24 24"
-         stroke="currentColor">
+        class="w-4 h-4 text-gray-500 transition-transform duration-200"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M19 9l-7 7-7-7" />
     </svg>
   </div>
-
   <!-- Dropdown -->
   <div id="masalahDropdown"
        class="absolute z-20 mt-1 w-full bg-white border rounded-lg shadow-md hidden max-h-56 md:max-h-64 overflow-y-auto">
@@ -291,6 +290,7 @@ document.addEventListener("click", e => {
 });
 </script>
 {% endblock %}
+
 
 
 
