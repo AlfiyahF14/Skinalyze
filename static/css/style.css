@@ -600,7 +600,7 @@ footer .border-t p {
 
 @media (max-width: 768px) {
   .reset-btn {
-    font-size: 14px;  /* lebih kecil untuk mobile */
+    font-size: 12px;  /* lebih kecil untuk mobile */
     padding: 6px 10px; 
   }
 }
@@ -2099,6 +2099,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
