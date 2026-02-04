@@ -1716,13 +1716,16 @@ footer .border-t p {
     text-align: left !important;
   }
 
-  #chatForm {
+    #chatForm {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
+    width: 100%;
   }
 
   #chatForm input {
+    flex: 1;
+    min-width: 0;
     height: 38px;
     font-size: 13px;
     border-radius: 8px;
@@ -1730,11 +1733,13 @@ footer .border-t p {
   }
 
   #chatForm button {
-    height: 35px; 
-    padding: 0 15px;
+    height: 35px;
+    padding: 0 10px;
     font-size: 12px;
     border-radius: 8px;
+    white-space: nowrap;
     background-color: #0d4d4d;
+    flex-shrink: 0;
   }
 
   #chatQuick {
@@ -2030,3 +2035,4 @@ footer .border-t p {
   }
 
 }
+
