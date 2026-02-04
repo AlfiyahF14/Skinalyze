@@ -1356,17 +1356,25 @@ footer .border-t p {
     line-height: 1.4;
     max-height: 3.8em;
     overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .produk-page .produk-card .labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 8px;
   }
 
   .produk-page .produk-card button {
-    margin-top: 10 px;
+    margin-top: 10px;
     font-size: 10.5px;
     padding: 5px 8px;
     border-radius: 8px;
     height: auto;
     line-height: 1.2;
   }
-
+   
   /* ================= LABEL / BADGE ================= */
   .produk-page .produk-card span {
     font-size: 9.5px;
@@ -2055,6 +2063,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
