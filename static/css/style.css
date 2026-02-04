@@ -598,6 +598,13 @@ footer .border-t p {
   background: #ffd3e6;
 }
 
+@media (max-width: 768px) {
+  .reset-btn {
+    font-size: 14px;  /* lebih kecil untuk mobile */
+    padding: 6px 10px; 
+  }
+}
+
 .btn-manfaat {
   margin-top: auto;
   padding: 8px 0;
@@ -1309,12 +1316,6 @@ footer .border-t p {
   .filter-sidebar.show {
     transform: translateX(0);
   }
-   
-   .filter-sidebar .btn-reset {
-    font-size: 14px; 
-    padding: 6px 12px; 
-  }
-
 
   /* ================= GRID PRODUK ================= */
   .produk-page {
@@ -2098,6 +2099,7 @@ footer .border-t p {
   }
 
 }
+
 
 
 
