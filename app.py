@@ -555,7 +555,7 @@ def page_home():
     # Ambil parameter filter
     search = request.args.get("search")
     selected_brands = request.args.getlist("brand")
-    selected_categories = request.args.getlist("category")
+    selected_categories = request.args.getlist("kategori")
     alcohol_free = request.args.get("alcohol_free") == "true"
     fragrance_free = request.args.get("fragrance_free") == "true"
     non_comedogenic = request.args.get("non_comedogenic") == "true"
@@ -726,10 +726,8 @@ def filter_produk(df, search=None, brands=None, categories=None, non_comedogenic
         df = df[df["Brand"].isin(brands)]
 
     if categories:
-        df["Kategori_clean"] = df["Kategori"].astype(str).str.lower().str.replace(" ", "")
         categories_clean = [c.lower().replace(" ", "") for c in categories]
-        df = df[df["Kategori_clean"].isin(categories_clean)]
-
+        df = df[df["Kategori"].astype(str).str.lower().str.replace(" ", "").isin(categories_clean)]
 
     if alcohol_free and "Alcohol-Free" in df.columns:
         df = df[df["Alcohol-Free"] == True]
@@ -1225,6 +1223,7 @@ def chatbot_api():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
