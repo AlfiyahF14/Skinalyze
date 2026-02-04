@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!text) return "";
         const arr = text.split(',').map(i => i.trim());
         if (arr.length <= limit) return arr.join(', ');
-        return arr.slice(0, limit).join(', ') + ', …';
+        return arr.slice(0, limit).join(', ') + 'dll';
     }
     
     /* ================================
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     <p class="detail-row"><strong>Brand:</strong> ${item.brand}</p>
                                     <p class="detail-row"><strong>Kategori:</strong> ${kategoriMap[item.kategori] || item.kategori}</p>
                                     <p class="ingredient-label"><strong>Kandungan Utama:</strong></p>
-                                    <p class="ingredient-content">${potongKandungan(item.kandungan)}</p>
+                                    <p class="ingredient-content">${item.kandungan || ""}</p>
                                 </div>
                                 <div class="label-box flex flex-wrap gap-2 justify-start mt-3">
                                     ${item.alcohol_free ? `<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full">🚫 Alcohol-Free</span>` : ""}
@@ -288,4 +288,5 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
 
